@@ -13,11 +13,21 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 	//공통
 	Menu menu;
 	MenuBar menubar;
-	MenuItem user_add, user_update, book_add, book_delete, book_lend, search_info, delay_info, book_topten, home;
+	MenuItem user_add, user_update, book_add, book_delete, book_lend, search_info, delay_info, book_topten, logout;
 	Panel p_main;
 	
+	//로그인 화면
+	Label lb_login_title, lb_login_id, lb_login_pw, lb_login_msg;
+	TextField tf_login_id, tf_login_pw;
+	Button bt_login, bt_login_add;
+
+	//회원가입 화면
+	Label lb_admin_add_title, lb_admin_add_id, lb_admin_add_pw, lb_admin_add_key, lb_admin_add_msg;
+	TextField tf_admin_add_id, tf_admin_add_pw, tf_admin_add_key;
+	Button bt_admin_add, bt_admin_add_home;
+	
 	//초기 화면
-	Label lb_main;
+	Label lb_main_msg1, lb_main_msg2;
 	
 	//사용자 등록
 	Label lb_user_add_title, lb_user_add_name, lb_user_add_birth, lb_user_add_addr, lb_user_add_tel, lb_user_add_msg;
@@ -78,12 +88,12 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 	public BookAdminGui() throws Exception{
 		featuresNotFound = "DB연동 기능 사용불가";
 		
-		mainScreen();
-		this.add(p_main);
+		loginView();
 		menubar = new MenuBar();
 		this.setMenuBar(menubar);
 		menu = new Menu("메뉴");
 		menubar.add(menu);
+		this.add(p_main);
 		user_add = new MenuItem("회원정보 등록");
 		user_update = new MenuItem("회원정보 수정");
 		book_add = new MenuItem("책 정보 등록");
@@ -91,8 +101,10 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 		book_lend = new MenuItem("책 대여 및 반납");
 		search_info = new MenuItem("검색하기");
 		delay_info = new MenuItem("연체 정보 보기");
-		book_topten = new MenuItem("대여 탑10 책 정보");
-		home = new MenuItem("처음으로");
+		book_topten = new MenuItem("인기도서 Top10");
+		logout = new MenuItem("로그아웃");
+		
+		setMenubar(false);
 		
 		menu.add(user_add);
 		menu.add(user_update);
@@ -103,7 +115,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 		menu.add(delay_info);
 		menu.add(book_topten);
 		menu.addSeparator();
-		menu.add(home);
+		menu.add(logout);
 		
 		user_add.addActionListener(this);
 		user_update.addActionListener(this);
@@ -113,15 +125,16 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 		search_info.addActionListener(this);
 		delay_info.addActionListener(this);
 		book_topten.addActionListener(this);
-		home.addActionListener(this);
+		logout.addActionListener(this);
 		this.addWindowListener(
-			new WindowAdapter() {
-				@Override
-				public void windowClosing(WindowEvent e) {
-					System.exit(0);
+				new WindowAdapter() {
+					@Override
+					public void windowClosing(WindowEvent e) {
+						System.exit(0);
+					}
 				}
-			}
 		);
+
 	}
 	
 	@Override
@@ -135,7 +148,50 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 		// DB 연동 기능 탑재
 		this.features =features;
 	}
+	@Override
+	public String getloginId() {
+		return tf_login_id.getText();
+	}
+	@Override
+	public String getloginPw() {
+		return tf_login_pw.getText();
+	}
+	@Override
+	public void setAdminAddMsg(String Message) {
+		lb_admin_add_msg.setText(Message);
+	}
+	@Override
+	public void setLoginMsg(String Message) {
+		lb_login_msg.setText(Message);	
+	}
 	
+	@Override
+	public String getAdminId() {
+		return tf_admin_add_id.getText();
+	}
+	@Override
+	public String getAdminPw() {
+		return tf_admin_add_pw.getText();
+	}
+	@Override
+	public String getAdminKey() {
+		return tf_admin_add_key.getText();
+	}
+	@Override
+	public void setAdminId(String id) {
+		tf_admin_add_id.setText(id);
+		
+	}
+	@Override
+	public void setAdminPw(String pw) {
+		tf_admin_add_pw.setText(pw);
+		
+	}
+	@Override
+	public void setAdminKey(String key) {
+		tf_admin_add_key.setText(key);
+		
+	}
 	@Override
 	public String getUserAddName() {
 		return tf_user_add_name.getText();
@@ -267,7 +323,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 	public void setBookAddList(String bookList) {
 		ta_book_add_list.setText(bookList);
 	}
-
+	
 	@Override
 	public String getBookDeleteId() {
 		return tf_book_delete_bid.getText();
@@ -433,9 +489,9 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 					e1.printStackTrace();
 				}
 			}
-		}else if(obj == home) {
+		}else if(obj == logout) {
 			this.remove(p_main);
-			mainScreen();
+			logout();
 			this.add(p_main);
 			this.validate();
 		} else if (features != null) {
@@ -507,18 +563,182 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 				}
 				this.add(p_main);
 				this.validate();
+			}else if(obj == bt_login) {
+				try {
+					features.login();
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				if(features.getLoginStatus()== true) {
+					this.remove(p_main);
+					mainScreen();
+					this.add(p_main);
+					this.validate();
+				}
+			}else if(obj == bt_login_add) {
+				this.remove(p_main);
+				adminAddView();
+				this.add(p_main);
+				this.validate();
+			}else if(obj == bt_admin_add) {
+				try {
+					features.adminAdd();
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}else if(obj == bt_admin_add_home) {
+				this.remove(p_main);
+				loginView();
+				this.add(p_main);
+				this.validate();
 			}
 		}
 	}
 	
 	//메인 화면 메서드
 	   public void mainScreen() {
-	      p_main = new Panel(new BorderLayout());
-	      lb_main = new Label("도서관리 프로그램 v3.0", Label.CENTER);
-	      p_main.add(lb_main);
+		    p_main = new Panel(new BorderLayout());
+			lb_main_msg1 = new Label("도서관리 프로그램 v3.0", Label.CENTER);
+			lb_main_msg2 = new Label("상단 메뉴에서 사용할 기능을 선택해주세요.", Label.CENTER);
+			p_main.add(lb_main_msg1);
+			p_main.add(lb_main_msg2);
+
+			this.add(p_main);
 	   }
-	   
-	   
+		//메인 화면 메서드
+		public void loginView() {
+			p_main = new Panel(new BorderLayout());
+			Panel p_main_north = new Panel(new GridLayout(4, 1, 10, 10));
+			Panel p_main_east = new Panel(new GridLayout(1, 1, 10, 10));
+			Panel p_main_west = new Panel(new GridLayout(1, 1, 10, 10));
+			Panel p_main_south = new Panel(new GridLayout(4, 1, 10, 10));
+			Panel p_main_center = new Panel(new GridLayout(2, 3, 10, 10));
+			
+			lb_login_title = new Label("도서관리 프로그램 v3.0", Label.CENTER);
+			lb_login_msg = new Label("", Label.CENTER);
+			lb_login_id = new Label("          ID   : ");
+			lb_login_pw = new Label("          PW : ");
+			tf_login_id = new TextField("");
+			tf_login_pw = new TextField("");
+			tf_login_pw.setEchoChar('*');
+			bt_login = new Button("로그인");
+			bt_login_add = new Button("회원가입");	
+			
+			p_main_north.add(new Label());
+			p_main_north.add(new Label());
+			p_main_north.add(lb_login_title);
+			p_main_north.add(new Label());		
+			p_main_east.add(new Label("                                            "));
+			p_main_west.add(new Label("                                            "));
+			p_main_south.add(new Label());
+			p_main_south.add(lb_login_msg);
+			p_main_south.add(new Label());
+			p_main_south.add(new Label());								
+			
+			p_main_center.add(lb_login_id);
+			p_main_center.add(tf_login_id);
+			p_main_center.add(bt_login);
+			p_main_center.add(lb_login_pw);
+			p_main_center.add(tf_login_pw);
+			p_main_center.add(bt_login_add);
+				
+			p_main.add(p_main_center, "Center");
+			p_main.add(p_main_north, "North");
+			p_main.add(p_main_east, "East");
+			p_main.add(p_main_west, "West");
+			p_main.add(p_main_south, "South");
+			
+			this.add(p_main);
+			
+			bt_login.addActionListener(this);
+			bt_login_add.addActionListener(this);		
+		}	   
+
+		//로그아웃 메서드
+		public void logout() {
+			features.setLoginStatus(false);
+			setMenubar(features.getLoginStatus());
+			loginView();
+		}
+
+		public void setMenubar(boolean login_info) {
+			user_add.setEnabled(login_info);
+			user_update.setEnabled(login_info);
+			book_add.setEnabled(login_info);
+			book_delete.setEnabled(login_info);
+			book_lend.setEnabled(login_info);
+			search_info.setEnabled(login_info);
+			delay_info.setEnabled(login_info);
+			book_topten.setEnabled(login_info);
+			logout.setEnabled(login_info);
+		}		
+		
+		//관리자 회원가입 화면 메서드
+		public void adminAddView() {
+			p_main = new Panel(new BorderLayout());
+			Panel p_main_north = new Panel(new GridLayout(2, 1, 10, 10));
+			Panel p_main_east = new Panel(new GridLayout(1, 1, 10, 10));
+			Panel p_main_west = new Panel(new GridLayout(1, 1, 10, 10));
+			Panel p_main_south = new Panel(new BorderLayout(10, 10));
+			Panel p_main_south_center = new Panel(new GridLayout(3, 5, 10, 10));
+			Panel p_main_center = new Panel(new GridLayout(4, 2, 10, 10));
+			
+			lb_admin_add_title = new Label("회원가입", Label.CENTER);
+			lb_admin_add_id = new Label("ID   : ");
+			lb_admin_add_pw = new Label("PW : ");
+			lb_admin_add_key = new Label("Admin key : ");
+			lb_admin_add_msg = new Label("", Label.CENTER);
+			tf_admin_add_id = new TextField("");
+			tf_admin_add_pw = new TextField("");
+			tf_admin_add_key = new TextField("");
+			tf_admin_add_pw.setEchoChar('*');
+			tf_admin_add_key.setEchoChar('*');
+			bt_admin_add = new Button("회원가입");
+			bt_admin_add_home = new Button("처음으로");
+			
+			p_main_north.add(lb_admin_add_title);
+			p_main_north.add(new Label());
+			p_main_east.add(new Label("                                                           "));
+			p_main_west.add(new Label("                                                           "));
+			p_main_south_center.add(new Label());		
+			p_main_south_center.add(new Label());
+			p_main_south_center.add(new Label());
+			p_main_south_center.add(new Label());
+			p_main_south_center.add(new Label());
+			p_main_south_center.add(new Label());
+			p_main_south_center.add(new Label());
+			p_main_south_center.add(bt_admin_add);
+			p_main_south_center.add(new Label());
+			p_main_south_center.add(new Label());
+			p_main_south_center.add(new Label());
+			p_main_south_center.add(new Label());
+			p_main_south_center.add(bt_admin_add_home);
+			
+			p_main_south.add(lb_admin_add_msg, "North");
+			p_main_south.add(p_main_south_center);
+			
+			p_main_center.add(lb_admin_add_id);
+			p_main_center.add(tf_admin_add_id);
+			p_main_center.add(lb_admin_add_pw);
+			p_main_center.add(tf_admin_add_pw);
+			p_main_center.add(lb_admin_add_key);
+			p_main_center.add(tf_admin_add_key);
+			
+			p_main.add(p_main_center, "Center");
+			p_main.add(p_main_north, "North");
+			p_main.add(p_main_east, "East");
+			p_main.add(p_main_west, "West");
+			p_main.add(p_main_south, "South");
+			
+			this.add(p_main);
+			
+			bt_admin_add.addActionListener(this);
+			bt_admin_add_home.addActionListener(this);
+		}
+		
+		
 	   //사용자 등록 화면 메서드
 	   public void userAddView(String str) {
 	       p_main = new Panel(new BorderLayout(10,10));

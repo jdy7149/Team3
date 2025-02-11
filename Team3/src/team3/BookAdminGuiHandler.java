@@ -1,6 +1,21 @@
 package team3;
 
 public interface BookAdminGuiHandler {
+	//로그인
+	String getloginId();
+	String getloginPw();
+	void setLoginMsg(String Message);
+	void setMenubar(boolean login_info);
+	
+	//회원가입
+	String getAdminId();
+	String getAdminPw();
+	String getAdminKey();
+	void setAdminId(String id);
+	void setAdminPw(String pw);
+	void setAdminKey(String key);
+	void setAdminAddMsg(String Message);
+	
 	// 회원 등록
 	String getUserAddName();
 	String getUserAddTel();

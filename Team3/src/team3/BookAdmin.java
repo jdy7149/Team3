@@ -9,11 +9,13 @@ public class BookAdmin implements BookAdminIF {
 	private BookAdminGuiHandler gui;
 	private Connection con;
 	private int lendLimit;
+	private boolean login_info;
 	
 	public BookAdmin(BookAdminGuiHandler gui, Connection con) throws Exception {
 		this.gui = gui;
 		this.con = con;
 		lendLimit = 5;
+		login_info = false;
 	}
 	
 	public int getLendLimit() {
@@ -23,6 +25,86 @@ public class BookAdmin implements BookAdminIF {
 	public void setLendLimit(int lendLimit) {
 		this.lendLimit = lendLimit;
 	}
+
+	
+	@Override
+	public void setLoginStatus(boolean st) {
+		this.login_info = st;
+		
+	}
+	public void login() throws Exception{
+		Class.forName("oracle.jdbc.driver.OracleDriver");
+	    String url = "jdbc:oracle:thin:@localhost:1521:xe";
+	    String user = "scott";
+	    String pwd = "1234";
+	    Connection con = DriverManager.getConnection(url, user, pwd);
+	    String sql = "select * from admin where admin_id = ? and admin_pw = ?";
+	    PreparedStatement ps = con.prepareStatement(sql);
+	    ps.setString(1, gui.getloginId());
+	    ps.setString(2, gui.getloginPw());
+	    ResultSet rs = ps.executeQuery();
+	    if(rs.next()) {
+	    	login_info = true;
+	    	gui.setMenubar(login_info);
+	    }else {
+	    	if(gui.getloginId().equals("")||gui.getloginPw().equals("")) {
+	    		gui.setLoginMsg("로그인 정보가 입력되지 않았습니다. 입력한 로그인 정보를 확인해주세요.");
+	    	}else {
+	    		gui.setLoginMsg("로그인 정보가 일치하지 않습니다.");   		
+	    	}
+	    }
+	    rs.close();
+	    ps.close();
+	    con.close();
+	}
+
+	//회원가입 메서드
+	public void adminAdd() throws Exception{
+		Class.forName("oracle.jdbc.driver.OracleDriver");
+	    String url = "jdbc:oracle:thin:@localhost:1521:xe";
+	    String user = "scott";
+	    String pwd = "1234";
+	    Connection con = DriverManager.getConnection(url, user, pwd);
+	    String sql = "select * from admin where admin_id = ?";
+	    PreparedStatement ps = con.prepareStatement(sql);
+	    ps.setString(1, gui.getAdminId());
+	    ResultSet rs = ps.executeQuery();
+	    if(rs.next()) {
+	    	if(gui.getAdminId().equals("") || gui.getAdminPw().equals("") || gui.getAdminKey().equals("")) {
+	    		gui.setAdminAddMsg("입력 정보가 모두 입려되지 않았습니다. 입력 정보를 확인해주세요.");	    			    		
+	    	}else {
+	    		if(gui.getAdminKey().equals("1234")) {
+	    			gui.setAdminAddMsg("중복된 ID입니다.");	    			    			    		
+	    		}else {
+	    			gui.setAdminAddMsg("관리자 키를 잘못 입력하였습니다. 관리자 키를 확인해주세요.");	    			    			    			    			    		
+	    		}	    		
+	    	}
+	    }else {
+	    	if(gui.getAdminId().equals("") || gui.getAdminPw().equals("") || gui.getAdminKey().equals("")) {
+	    		gui.setAdminAddMsg("입력 정보가 모두 입려되지 않았습니다. 입력 정보를 확인해주세요.");	    			    		
+	    	}else {
+	    		if(gui.getAdminKey().equals("1234")) {
+	    			sql = "insert into admin values (?, ?)";
+	    			ps = con.prepareStatement(sql);
+	    			ps.setString(1, gui.getAdminId());
+	    			ps.setString(2, gui.getAdminPw());
+	    			ps.execute();
+	    			gui.setAdminId("");
+	    			gui.setAdminPw("");
+	    			gui.setAdminKey("");
+	    			gui.setAdminAddMsg("회원가입이 완료되었습니다.");	    			    			    			    			    		
+	    		}else {
+	    			gui.setAdminAddMsg("관리자 키를 잘못 입력하였습니다. 관리자 키를 확인해주세요.");	    			    			    			    			    		    			    		
+	    		}    			    		
+	    	}
+	    }
+	    rs.close();
+	    ps.close();
+	    con.close();
+	}
+	
+	
+	
 	
 	@Override
 	public String userList() throws Exception {
@@ -402,6 +484,11 @@ public class BookAdmin implements BookAdminIF {
 		
 		rs.close();
 		ps.close();
+	}
+
+	@Override
+	public boolean getLoginStatus() {
+		return login_info;
 	}
 
 } 
