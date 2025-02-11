@@ -2,8 +2,10 @@ package team3;
 
 import java.awt.*;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.awt.event.*;
 import java.util.*;
+import java.util.Date;
 import java.awt.List;
 
 public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiHandler {
@@ -50,10 +52,10 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 	TextArea ta_search_info_show_result;
 
 	// 연체정보보기
-	Label lb_delay_info_title, lb_delay_info_bname, lb_delay_info_msg;
-	Panel p_main_c_n,p_main_c;
+	Label lb_delay_info_title, lb_delay_info_bname, lb_delay_info_msg,lb_time,day_delay;
+	Panel p_main_c_n,p_main_c,p_main_s,p_main_s_one;
 	Button bt_delay_info_reload;
-	List l_delay,l_book_id,l_person_name,l_book_name,l_event_time;
+	List l_delay,l_book_id,l_person_name,l_book_name,l_event_time,l_time_cal;
 
 	// 인기순위
 	Label lb_rank_info_title;
@@ -634,12 +636,17 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 		
 		p_main = new Panel(new BorderLayout(10, 10));
 		lb_delay_info_title = new Label("연체 회원 정보", Label.CENTER);; 
-		p_main.add(lb_delay_info_title, "North");
+		
+		
 		p_main_c = new Panel(new BorderLayout(5, 5));
-		Panel p_main_s = new Panel(new FlowLayout());
-		 
+		p_main_s = new Panel(new GridLayout(2,1));
+		Panel p_main_n=new Panel(new FlowLayout());
+		
+		p_main.add(p_main_n,"North"); 
 		p_main.add(p_main_c, "Center");
-		p_main.add(p_main_s, "South"); 
+		p_main.add(p_main_s, "South");
+		
+		p_main_n.add(lb_delay_info_title);
 		
 		Panel p_main_c_n=new Panel(new GridLayout(1,4,10,10));
 		p_main_c.add(p_main_c_n,"North");
@@ -654,18 +661,89 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 		p_main_c_n.add(l_event_time_sub);
 		
 		l_delay=new List(0,false);
+		l_time_cal=new List(0,false);
 		p_main_c.add(l_delay,"Center");
+		
+		p_main_s_one=new Panel(new GridLayout(1,3));
+		Panel p_main_s_two=new Panel(new FlowLayout());
+		
+		p_main_s.add(p_main_s_one);
+		p_main_s.add(p_main_s_two);
+		
+		lb_time = new Label(" ");
+		
+		startTimer();
+		
+		p_main_s_one.add(lb_time);
+		p_main_s_one.add(new Label(" "));
+		
 		
 		bt_delay_info_reload = new Button("새로고침");
 		bt_delay_info_reload.setSize(100, 100);
-		p_main_s.add(bt_delay_info_reload, "South");
+		p_main_s_two.add(bt_delay_info_reload, "South");
+		
+		day_delay=new Label(" "); 
+		l_delay.addItemListener(new ItemListener() {
+			
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if(e.getStateChange()==ItemEvent.SELECTED) {
+					p_main_s_one.remove(day_delay);
+					String[] selected=l_delay.getSelectedItem().split(" ");
+					
+					try {
+						SimpleDateFormat time_format = new SimpleDateFormat("yyyy-MM-dd");
+						Date selectedDate = time_format.parse(selected[selected.length-23]);
+						Date now = new Date();
 
+						long delay_time = (now.getTime() - selectedDate.getTime()) / (24 * 60 * 60 * 1000);
+
+						day_delay = new Label("연체일 : " + delay_time);
+						p_main_s_one.add(day_delay);
+
+						p_main_c.revalidate();
+						p_main_c.repaint();
+					} catch (Exception ex) {
+						ex.printStackTrace();
+						p_main_c.revalidate();
+						p_main_c.repaint();
+					}
+				}
+				
+			}
+			
+		});
+		
+
+		
 		bt_delay_info_reload.addActionListener(this);
-		p_main_c.revalidate();
-		p_main_c.repaint();
+		p_main.revalidate();
+		p_main.repaint();
 	}
 	
+	public void startTimer() {
+		new Thread(new Runnable() {
+			public void run() {
+				try {
+					while (true) {
+						updateTimeLabel();
+						Thread.sleep(1000);
+					}
+				} catch (Exception e) {
+					return;
+				}
+			}
+		}).start();
+	}
 
+	public void updateTimeLabel() {
+		Date now = new Date();
+		SimpleDateFormat time_format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String formattedNow = time_format.format(now);
+		EventQueue.invokeLater(() -> lb_time.setText("현재시간 : " + formattedNow));
+	}
+	
+	
 	public void topTenView() {
 		p_main = new Panel(new BorderLayout(20, 20));
 		lb_rank_info_title = new Label("인기 도서 Top10", Label.CENTER);
