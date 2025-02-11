@@ -11,7 +11,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 	//공통
 	Menu menu;
 	MenuBar menubar;
-	MenuItem user_add, book_add, book_delete, book_lend, search_info, delay_info, book_topten, home;
+	MenuItem user_add, user_update, book_add, book_delete, book_lend, search_info, delay_info, book_topten, home;
 	Panel p_main;
 	
 	//초기 화면
@@ -22,6 +22,13 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 	TextField tf_user_add_name, tf_user_add_addr, tf_user_add_tel, tf_user_add_birth;
 	TextArea ta_user_list;
 	Button bt_user_add;
+	
+	
+	//사용자 정보 수정
+	Label lb_user_update_title, lb_user_update_id, lb_user_update_name, lb_user_update_addr, lb_user_update_tel, lb_user_update_birth, lb_user_update_msg;
+	TextField tf_user_update_id, tf_user_update_name, tf_user_update_addr, tf_user_update_tel, tf_user_update_birth;
+	TextArea ta_user_update_list;
+	Button bt_user_update_uinfo, bt_user_update;
 	
 	//책 정보 등록
 	Label lb_book_add_title, lb_book_add_bname, lb_book_add_genre, lb_book_add_author, lb_book_add_publisher, lb_book_add_msg;
@@ -76,6 +83,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 		menu = new Menu("메뉴");
 		menubar.add(menu);
 		user_add = new MenuItem("회원정보 등록");
+		user_update = new MenuItem("회원정보 수정");
 		book_add = new MenuItem("책 정보 등록");
 		book_delete = new MenuItem("책 정보 삭제");
 		book_lend = new MenuItem("책 대여 및 반납");
@@ -85,6 +93,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 		home = new MenuItem("처음으로");
 		
 		menu.add(user_add);
+		menu.add(user_update);
 		menu.add(book_add);
 		menu.add(book_delete);
 		menu.add(book_lend);
@@ -95,6 +104,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 		menu.add(home);
 		
 		user_add.addActionListener(this);
+		user_update.addActionListener(this);
 		book_add.addActionListener(this);
 		book_delete.addActionListener(this);
 		book_lend.addActionListener(this);
@@ -154,6 +164,78 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 		ta_user_list.setText(userList);
 	}
 
+	@Override
+	public String getUserUpdateId() {
+		// TODO Auto-generated method stub
+		return tf_user_update_id.getText();
+	}
+
+	@Override
+	public String getUserUpdateName() {
+		// TODO Auto-generated method stub
+		return tf_user_update_name.getText();
+	}
+
+	@Override
+	public String getUserUpdateTel() {
+		// TODO Auto-generated method stub
+		return tf_user_update_tel.getText();
+	}
+
+	@Override
+	public String getUserUpdateAddr() {
+		// TODO Auto-generated method stub
+		return tf_user_update_addr.getText();
+	}
+
+	@Override
+	public String getUserUpdateBirth() {
+		// TODO Auto-generated method stub
+		return tf_user_update_birth.getText();
+	}
+
+	@Override
+	public void setUserUpdateId(String id) {
+		// TODO Auto-generated method stub
+		tf_user_update_id.setText(id);
+	}
+
+	@Override
+	public void setUserUpdateName(String name) {
+		// TODO Auto-generated method stub
+		tf_user_update_name.setText(name);
+	}
+
+	@Override
+	public void setUserUpdateAddr(String addr) {
+		// TODO Auto-generated method stub
+		tf_user_update_addr.setText(addr);
+	}
+
+	@Override
+	public void setUserUpdateTel(String tel) {
+		// TODO Auto-generated method stub
+		tf_user_update_tel.setText(tel);
+	}
+
+	@Override
+	public void setUserUpdateBirth(String birth) {
+		// TODO Auto-generated method stub
+		tf_user_update_birth.setText(birth);
+	}
+
+	@Override
+	public void setUserUpdateMsg(String message) {
+		// TODO Auto-generated method stub
+		lb_user_update_msg.setText(message);
+	}
+
+	@Override
+	public void setUserUpdateList(String userList) {
+		// TODO Auto-generated method stub
+		ta_user_update_list.setText(userList);
+	}
+	
 	@Override
 	public String getBookAddGenre() {
 		return tf_book_add_genre.getText();
@@ -269,6 +351,18 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 			}
 			this.add(p_main);
 			this.validate();
+		} else if (obj == user_update) {
+			this.remove(p_main);
+			try {
+				String content = features != null ? features.userList() : featuresNotFound;
+				userUpdateView(content);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			this.add(p_main);
+			this.validate();
+
 		}else if(obj == book_add) {
 			this.remove(p_main);
 			try {
@@ -351,6 +445,20 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
+			} else if (obj == bt_user_update) {
+				try {
+					features.userUpdate();
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			} else if (obj == bt_user_update_uinfo) {
+				try {
+					features.userInfo();
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}else if(obj == bt_book_lend) {
 				try {
 					features.bookLend();
@@ -402,62 +510,128 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 	}
 	
 	//메인 화면 메서드
-	public void mainScreen() {
-		p_main = new Panel(new BorderLayout());
-		lb_main = new Label("도서관리 프로그램 v3.0", Label.CENTER);
-		p_main.add(lb_main);
-	}
-	
-	
-	//사용자 등록 화면 메서드
-	public void userAddView(String str) {
-	    p_main = new Panel(new BorderLayout(10,10));
-	    lb_user_add_title = new Label("회원 정보 추가",Label.CENTER);
-	    p_main.add(lb_user_add_title, "North");
+	   public void mainScreen() {
+	      p_main = new Panel(new BorderLayout());
+	      lb_main = new Label("도서관리 프로그램 v3.0", Label.CENTER);
+	      p_main.add(lb_main);
+	   }
+	   
+	   
+	   //사용자 등록 화면 메서드
+	   public void userAddView(String str) {
+	       p_main = new Panel(new BorderLayout(10,10));
+	       lb_user_add_title = new Label("회원 정보 추가",Label.CENTER);
+	       p_main.add(lb_user_add_title, "North");
+	         
+	       Panel p_center_temp = new Panel(new BorderLayout(20,20));
+	       Panel p_center_temp_west = new Panel(new GridLayout(6,2,5,16));
+	       Panel p_center_temp_center = new Panel(new BorderLayout(5,5));
+	         
+	       lb_user_add_name = new Label("회원 이름 : ");
+	       tf_user_add_name = new TextField();
+	       lb_user_add_tel = new Label("전화 번호 : ");
+	       tf_user_add_tel = new TextField();
+	       lb_user_add_addr = new Label("주소 : ");
+	       tf_user_add_addr = new TextField();
+	       lb_user_add_birth = new Label("생년월일 : ");
+	       tf_user_add_birth = new TextField();
+	       ta_user_list = new TextArea(str,0,0,ta_book_lend_list.SCROLLBARS_VERTICAL_ONLY);
+	       ta_user_list.setEditable(false);
+	         
+	       p_center_temp_west.add(new Label());
+	       p_center_temp_west.add(new Label());
+	       p_center_temp_west.add(lb_user_add_name);
+	       p_center_temp_west.add(tf_user_add_name);
+	       p_center_temp_west.add(lb_user_add_tel);
+	       p_center_temp_west.add(tf_user_add_tel);
+	       p_center_temp_west.add(lb_user_add_addr);
+	       p_center_temp_west.add(tf_user_add_addr);
+	       p_center_temp_west.add(lb_user_add_birth);
+	       p_center_temp_west.add(tf_user_add_birth);
+	         
+	       p_center_temp_center.add(new Label("회원 정보 현황",Label.CENTER), "North");
+	       p_center_temp_center.add(ta_user_list, "Center");
+	       p_center_temp.add(p_center_temp_west,"West");
+	       p_center_temp.add(p_center_temp_center,"Center");
+	       p_main.add(p_center_temp,"Center");
+	         
+	       Panel p_south_temp = new Panel(new BorderLayout(5,5));
+	       Panel p_south_south = new Panel();
+	       lb_user_add_msg = new Label("메세지 : ");
+	       bt_user_add = new Button("등록하기");
+	       p_south_temp.add(lb_user_add_msg);
+	       p_south_south.add(bt_user_add,"South");
+	       p_south_temp.add(p_south_south,"South");
+	       p_main.add(p_south_temp, "South");
+	         
+	       bt_user_add.addActionListener(this);
+	   }
+	   //회원 정보 수정 화면 메서드 1
+	   public void userUpdateView(String str) {
+
+	      p_main = new Panel(new BorderLayout(10, 10));
+	      lb_user_update_title = new Label("회원 정보 수정", Label.CENTER);
+	      p_main.add(lb_user_update_title, "North");
+
+	      Panel pCenter = new Panel(new BorderLayout(10, 10));
+	      Panel pCenterWest = new Panel(new GridLayout(6, 2, 5, 15));
+	      Panel pCenterCenter = new Panel(new BorderLayout(5, 5));
+	      Panel p_user_info = new Panel(new GridLayout(1, 2, 5, 5));
+
 	      
-	    Panel p_center_temp = new Panel(new BorderLayout(20,20));
-	    Panel p_center_temp_west = new Panel(new GridLayout(6,2,5,16));
-	    Panel p_center_temp_center = new Panel(new BorderLayout(5,5));
+	      lb_user_update_id = new Label("회원 번호 : ");
+	      tf_user_update_id = new TextField("");
+	      bt_user_update_uinfo = new Button("검색");
+	      lb_user_update_name = new Label("회원 이름 : ");
+	      tf_user_update_name = new TextField("");
+	      lb_user_update_addr = new Label("주소 : ");
+	      tf_user_update_addr = new TextField("");
+	      lb_user_update_tel = new Label("연락처 : ");
+	      tf_user_update_tel = new TextField("");
+	      lb_user_update_birth = new Label("생년월일 : ");
+	      tf_user_update_birth = new TextField("");
+	      bt_user_update = new Button("수정하기");
+	      ta_user_update_list = new TextArea(str, 0, 0, TextArea.SCROLLBARS_VERTICAL_ONLY);
+	      ta_user_update_list.setEditable(false);
+
+	      p_user_info.add(tf_user_update_id);
+	      p_user_info.add(bt_user_update_uinfo);
 	      
-	    lb_user_add_name = new Label("회원 이름 : ");
-	    tf_user_add_name = new TextField();
-	    lb_user_add_tel = new Label("전화 번호 : ");
-	    tf_user_add_tel = new TextField();
-	    lb_user_add_addr = new Label("주소 : ");
-	    tf_user_add_addr = new TextField();
-	    lb_user_add_birth = new Label("생년월일 : ");
-	    tf_user_add_birth = new TextField();
-	    ta_user_list = new TextArea(str,0,0,ta_book_lend_list.SCROLLBARS_VERTICAL_ONLY);
-	    ta_user_list.setEditable(false);
-	      
-	    p_center_temp_west.add(new Label());
-	    p_center_temp_west.add(new Label());
-	    p_center_temp_west.add(lb_user_add_name);
-	    p_center_temp_west.add(tf_user_add_name);
-	    p_center_temp_west.add(lb_user_add_tel);
-	    p_center_temp_west.add(tf_user_add_tel);
-	    p_center_temp_west.add(lb_user_add_addr);
-	    p_center_temp_west.add(tf_user_add_addr);
-	    p_center_temp_west.add(lb_user_add_birth);
-	    p_center_temp_west.add(tf_user_add_birth);
-	      
-	    p_center_temp_center.add(new Label("회원 정보 현황",Label.CENTER), "North");
-	    p_center_temp_center.add(ta_user_list, "Center");
-	    p_center_temp.add(p_center_temp_west,"West");
-	    p_center_temp.add(p_center_temp_center,"Center");
-	    p_main.add(p_center_temp,"Center");
-	      
-	    Panel p_south_temp = new Panel(new BorderLayout(5,5));
-	    Panel p_south_south = new Panel();
-	    lb_user_add_msg = new Label("메세지 : ");
-	    bt_user_add = new Button("등록하기");
-	    p_south_temp.add(lb_user_add_msg);
-	    p_south_south.add(bt_user_add,"South");
-	    p_south_temp.add(p_south_south,"South");
-	    p_main.add(p_south_temp, "South");
-	      
-	    bt_user_add.addActionListener(this);
-	}
+	      pCenterWest.add(new Label());
+	      pCenterWest.add(new Label());
+	      pCenterWest.add(lb_user_update_id);
+	      pCenterWest.add(p_user_info);
+	      pCenterWest.add(lb_user_update_name);
+	      pCenterWest.add(tf_user_update_name);
+	      pCenterWest.add(lb_user_update_addr);
+	      pCenterWest.add(tf_user_update_addr);
+	      pCenterWest.add(lb_user_update_tel);
+	      pCenterWest.add(tf_user_update_tel);
+	      pCenterWest.add(lb_user_update_birth);
+	      pCenterWest.add(tf_user_update_birth);
+
+	      pCenterCenter.add(new Label("회원 정보 현황", Label.CENTER), "North");
+	      pCenterCenter.add(ta_user_update_list, "Center");
+	      Font font=new Font("Arial",Font.PLAIN,11);
+	      ta_user_update_list.setFont(font);
+	      pCenter.add(pCenterWest, "West");
+	      pCenter.add(pCenterCenter, "Center");
+	      p_main.add(pCenter, "Center");
+
+	      Panel pSouth = new Panel(new BorderLayout(5, 5));
+	      Panel pSouthSouth = new Panel();
+	      lb_user_update_msg = new Label("메세지 : ");
+	      bt_user_update = new Button("수정하기");
+	      pSouth.add(lb_user_update_msg);
+	      pSouthSouth.add(bt_user_update, "South");
+	      pSouth.add(pSouthSouth, "South");
+	      p_main.add(pSouth, "South");
+
+	      bt_user_update_uinfo.addActionListener(this);
+	      bt_user_update.addActionListener(this);
+
+	   }
+
 	   
 	
 	//책 정보 등록 화면 메서드
@@ -677,5 +851,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 		p_main_rank.add(p_main_rank_center, "Center");
 		p_main.add(p_main_rank, "Center");
 	}
+
+
 
 }

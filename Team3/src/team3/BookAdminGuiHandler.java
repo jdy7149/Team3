@@ -9,6 +9,31 @@ public interface BookAdminGuiHandler {
 	void setUserAddMsg(String message);
 	void setUserList(String userList);
 	
+	// 회원 정보 수정
+	String getUserUpdateId();
+
+	String getUserUpdateName();
+
+	String getUserUpdateTel();
+
+	String getUserUpdateAddr();
+
+	String getUserUpdateBirth();
+
+	void setUserUpdateId(String id);
+
+	void setUserUpdateName(String name);
+
+	void setUserUpdateAddr(String addr);
+
+	void setUserUpdateTel(String tel);
+
+	void setUserUpdateBirth(String birth);
+
+	void setUserUpdateMsg(String message);
+
+	void setUserUpdateList(String userList);
+	
 	// 책 등록
 	String getBookAddGenre();
 	String getBookAddtitle();
