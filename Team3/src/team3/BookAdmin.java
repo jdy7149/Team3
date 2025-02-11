@@ -309,9 +309,9 @@ public class BookAdmin implements BookAdminIF {
 		rs.close();
 		ps.close();
 	}
-	
+
 	@Override
-	public void topTen() throws Exception {
+	public void topTen() throws Exception { 
 
 		String sql = "SELECT * FROM (\r\n" + "    SELECT ROW_NUMBER() OVER (ORDER BY SUM(lend_count) DESC) AS rank,\r\n"
 				+ "    book_name\r\n" + "    FROM book\r\n" + "    GROUP BY book_name\r\n" + ")\r\n"
@@ -328,4 +328,4 @@ public class BookAdmin implements BookAdminIF {
 		ps.close();
 	}
 
-}
+} 
