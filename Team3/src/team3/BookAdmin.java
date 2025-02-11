@@ -63,16 +63,22 @@ public class BookAdmin implements BookAdminIF {
 	@Override
 	public String bookList() throws Exception {
 		
-		String sql = "select book_id,book_name from book order by book_id asc";
+		String sql = "select * from book order by book_id asc";
 		PreparedStatement ps = con.prepareStatement(sql);
 		ResultSet rs = ps.executeQuery();
-		String str = "책 번호\t책 이름\n";
-		while(rs.next()) {
-			str += rs.getInt("book_id")+"\t"+rs.getString("book_name")+"\n";
-		}	
+		String str = "책번호\t"
+					+String.format("%-"+(45-("도서명".length()*2))+"s", "도서명") + "\t\t"
+					+ String.format("%-"+(20-("출판사".length()*2))+"s", "출판사") + "\t"
+					+ "저자\n";
+		while (rs.next()) {
+			str += rs.getString("book_id") + "\t"
+					+ String.format("%-"+(55-(rs.getString("book_name").length()*2))+"s", rs.getString("book_name"))+"\t" 
+					+ String.format("%-"+(20-(rs.getString("publisher").length()*2))+"s", rs.getString("publisher"))+"\t"
+					+ rs.getString("author") + "\n";
+		}
 		rs.close();
 		ps.close();
-		return str;	
+		return str;
 	}
 	
 	//책 등록 메서드
@@ -83,40 +89,45 @@ public class BookAdmin implements BookAdminIF {
 	    genreId.put("철학",	 "philosophy_sq.NEXTVAL");
 	    genreId.put("문학",	 "literature_sq.NEXTVAL");
 	    genreId.put("과학",	 "science_sq.NEXTVAL");
-	      
-	    String sql = "insert into book (book_id, book_name, author, publisher) "
-	     	+ "values (" + genreId.get(gui.getBookAddGenre()) + " ,?,?,?)";
-	    PreparedStatement ps = con.prepareStatement(sql);
-	      
-	    ps.setString(1, gui.getBookAddtitle());
-	    ps.setString(2, gui.getBookAddAuthor());
-	    ps.setString(3, gui.getBookAddPublisher());
-	    ps.executeUpdate();
-	    gui.setBookAddMsg(gui.getBookAddtitle() + " 책의 신규 등록이 완료되었습니다.");   
-	    gui.setBookAddList(bookList());
-	    ps.close();
+	    
+	    if(gui.getBookAddtitle().equals("") || gui.getBookAddAuthor().equals("") || gui.getBookAddPublisher().equals("")) {
+	    	gui.setBookAddMsg("입력되지 않은 정보가 있습니다. 입력 정보를 확인해주세요.");
+	    }
+	    else {
+		    String sql = "insert into book (book_id, book_name, author, publisher) "
+		     	+ "values (" + genreId.get(gui.getBookAddGenre()) + " ,?,?,?)";
+		    PreparedStatement ps = con.prepareStatement(sql);
+		      
+		    ps.setString(1, gui.getBookAddtitle());
+		    ps.setString(2, gui.getBookAddAuthor());
+		    ps.setString(3, gui.getBookAddPublisher());
+		    ps.executeUpdate();
+		    gui.setBookAddMsg(gui.getBookAddtitle() + " 책의 신규 등록이 완료되었습니다.");   
+		    gui.setBookAddList(bookList());
+		    ps.close();
+	    }
 	}
 	
 	//책 삭제 메서드
 	@Override
 	public void bookDelete() throws Exception{
-
-		String sql = "delete from records where book_id=?";
-		PreparedStatement ps = con.prepareStatement(sql);
-		ps.setString(1, gui.getBookDeleteId());
-		ps.executeUpdate();	
-		sql = "delete from book where book_id=? ";
-		ps = con.prepareStatement(sql);
-		ps.setString(1, gui.getBookDeleteId());
-		int count = ps.executeUpdate();
-		if(count == 0) {
-			gui.setBookDeleteMsg("해당 책은 등록되지 않았습니다.");
-		}else {
-				gui.setBookDeleteMsg(gui.getBookDeleteId() + " 번 책의 정보가 삭제 되었습니다.");
-		}
-		gui.setBookDeleteList(bookList());
-		ps.close();
 		
+		if(gui.getBookDeleteId().equals("")) {
+			gui.setBookDeleteMsg("책 번호가 입력되지 않았습니다.");			
+		}
+		else {
+			String sql = "delete from book where book_id=? ";
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.setString(1, gui.getBookDeleteId());
+			int count = ps.executeUpdate();
+			if(count == 0) {
+				gui.setBookDeleteMsg("해당 책은 등록되지 않았습니다.");
+			}else {
+					gui.setBookDeleteMsg(gui.getBookDeleteId() + " 번 책의 정보가 삭제 되었습니다.");
+			}
+			gui.setBookDeleteList(bookList());
+			ps.close();
+		}
 	}
 	
 	//책 대여 현황 리스트 메서드
@@ -246,11 +257,11 @@ public class BookAdmin implements BookAdminIF {
 			
 			gui.setSearchResult("");
 			
-			gui.appendSearchResult("ID\t제목\t작가\t출판사\t분야\t상태\n");
+			gui.appendSearchResult("책번호\t도서명\t\t\t\t\t저자\t\t\t출판사\t\t장르\t대여상태\n");
 			
 			while (rs.next()) {
-				String row = rs.getInt("book_id") + "\t" + rs.getString("book_name") + "\t"
-						+ rs.getString("author") + "\t" + rs.getString("publisher") + "\t"
+				String row = rs.getInt("book_id") + "\t" + String.format("%-"+(55-(rs.getString("book_name").length()*2))+"s", rs.getString("book_name")) + "\t" 
+						+ String.format("%-"+(30-(rs.getString("author").length()*2))+"s", rs.getString("author")) + "\t" + String.format("%-"+(20-(rs.getString("publisher").length()*2))+"s", rs.getString("publisher")) + "\t"
 						+ rs.getString("genre") + "\t" + rs.getString("status") +"\n";
 				gui.appendSearchResult(row);
 			}
@@ -270,12 +281,12 @@ public class BookAdmin implements BookAdminIF {
 			
 			gui.setSearchResult("");
 			
-			gui.appendSearchResult("ID\t이름\t전화번호\t주소\t출생연도\t가능대여권수\n");
+			gui.appendSearchResult("사용자ID\t 이름\t\t연락처\t\t   주소\t\t    생년월일\t대여가능도서(최대 5권)\n");
 			
 			while (rs.next()) {
-				String row = rs.getInt("person_id") + "\t" + rs.getString("person_name") + "\t"
-						+ rs.getString("tel") + "\t\t" + rs.getString("addr") + "\t"
-						+ rs.getString("birth") + "\t\t" + rs.getInt("lend_limit") + "\n";
+				String row = rs.getInt("person_id") + "\t " + String.format("%-"+(23-(rs.getString("person_name").length()*2))+"s", rs.getString("person_name"))
+						+ rs.getString("tel") + "\t   " + String.format("%-"+(25-(rs.getString("addr").length()*2))+"s", rs.getString("addr"))
+						+ rs.getString("birth") + "\t" + rs.getInt("lend_limit") + "권 ("+(5-rs.getInt("lend_limit"))+"권 대여중)\n";
 				gui.appendSearchResult(row);
 			}
 			

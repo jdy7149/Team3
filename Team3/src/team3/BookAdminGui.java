@@ -463,25 +463,25 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 	   
 	
 	//책 정보 등록 화면 메서드
-	public void bookAddView(String str) {	
-		p_main = new Panel(new BorderLayout(10,10));
+	public void bookAddView(String str) {
+		p_main = new Panel(new BorderLayout(10, 10));
 		lb_book_add_title = new Label("책 정보 등록", Label.CENTER);
 		p_main.add(lb_book_add_title, "North");
-		
-		Panel p_center_temp = new Panel(new GridLayout(1,2,20,20));
-		Panel p_center_temp_west = new Panel(new GridLayout(8,1,5,5));
-		Panel p_center_temp_center = new Panel(new BorderLayout(5,5));
-		
-		lb_book_add_bname = new Label("책 이름 : ");
-		lb_book_add_genre = new Label("장르 : ");
-		lb_book_add_author = new Label("저자 : ");
-		lb_book_add_publisher = new Label("출판사 : ");
-		tf_book_add_bname = new TextField();
-		tf_book_add_genre = new TextField();
-		tf_book_add_author = new TextField();
-		tf_book_add_publisher = new TextField();
-		ta_book_add_list = new TextArea(str,0,0,ta_book_add_list.SCROLLBARS_VERTICAL_ONLY);
-		ta_book_add_list.setEditable(false);				
+
+		Panel p_center_temp = new Panel(new BorderLayout(20, 20));
+		Panel p_center_temp_west = new Panel(new GridLayout(8, 1, 5, 5));
+		Panel p_center_temp_center = new Panel(new BorderLayout(5, 5));
+
+		lb_book_add_bname = new Label("도서명 :                        ");
+		lb_book_add_genre = new Label("장르 :                        ");
+		lb_book_add_author = new Label("저자 :                        ");
+		lb_book_add_publisher = new Label("출판사 :                        ");
+		tf_book_add_bname = new TextField("");
+		tf_book_add_genre = new TextField("");
+		tf_book_add_author = new TextField("");
+		tf_book_add_publisher = new TextField("");
+		ta_book_add_list = new TextArea(str);
+		ta_book_add_list.setEditable(false);
 		
 		p_center_temp_west.add(lb_book_add_bname);
 		p_center_temp_west.add(tf_book_add_bname);
@@ -491,14 +491,14 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 		p_center_temp_west.add(tf_book_add_author);
 		p_center_temp_west.add(lb_book_add_publisher);
 		p_center_temp_west.add(tf_book_add_publisher);
-		
-		p_center_temp_center.add(new Label("책 정보 현황",Label.CENTER), "North");
+
+		p_center_temp_center.add(new Label("책 정보 현황", Label.CENTER), "North");
 		p_center_temp_center.add(ta_book_add_list, "Center");
 		p_center_temp.add(p_center_temp_west, "West");
 		p_center_temp.add(p_center_temp_center, "Center");
 		p_main.add(p_center_temp, "Center");
-		
-		Panel p_south_temp = new Panel(new BorderLayout(5,5));
+
+		Panel p_south_temp = new Panel(new BorderLayout(5, 5));
 		Panel p_south_south = new Panel();
 		lb_book_add_msg = new Label("메세지 : ");
 		bt_book_add = new Button("등록하기");
@@ -506,7 +506,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 		p_south_south.add(bt_book_add, "South");
 		p_south_temp.add(p_south_south, "South");
 		p_main.add(p_south_temp, "South");
-		
+
 		bt_book_add.addActionListener(this);
 	}
 	
@@ -517,12 +517,12 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 		p_main.add(lb_book_delete_title, "North");
 		
 		Panel p_center_temp = new Panel(new BorderLayout(20,20));
-		Panel p_center_temp_west = new Panel(new GridLayout(6,2,5,16));
+		Panel p_center_temp_west = new Panel(new GridLayout(6,2,5,13));
 		Panel p_center_temp_center = new Panel(new BorderLayout(5,5));
 		
-		lb_book_delete_bid = new Label("삭제할 책 번호 : ");
-		tf_book_delete_bid = new TextField();
-		ta_book_delete_list = new TextArea(str,0,0,ta_book_lend_list.SCROLLBARS_VERTICAL_ONLY);
+		lb_book_delete_bid = new Label("책 번호 : ");
+		tf_book_delete_bid = new TextField("");
+		ta_book_delete_list = new TextArea(str);
 		ta_book_delete_list.setEditable(false);		
 		
 		p_center_temp_west.add(new Label());
@@ -563,7 +563,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 		Panel p_center_temp_west = new Panel(new GridLayout(6,2,5,16));
 		Panel p_center_temp_center = new Panel(new BorderLayout(5,5));
 		
-		lb_book_lend_pid = new Label("사용자 ID : ");
+		lb_book_lend_pid = new Label("회원 번호 : ");
 		tf_book_lend_pid = new TextField();
 		lb_book_lend_bid = new Label("책 번호     : ");
 		tf_book_lend_bid = new TextField();
@@ -610,8 +610,8 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 		
 		Panel p_tf_and_bt = new Panel(new GridLayout(1, 4, 5, 5));
 		cg_options = new CheckboxGroup();
-		cb_book = new Checkbox("제목으로 책 찾기", cg_options, true);
-		cb_person = new Checkbox("이름으로 사람 찾기", cg_options, false);
+		cb_book = new Checkbox("도서명으로 검색", cg_options, true);
+		cb_person = new Checkbox("사람 이름으로 검색", cg_options, false);
 		tf_search_info_key = new TextField();
 		bt_search_info = new Button("검색");
 		p_tf_and_bt.add(cb_book);
@@ -621,7 +621,8 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 		p_top.add(p_tf_and_bt);
 		p_center_temp.add(p_top, "North");
 		
-		ta_search_info_show_result = new TextArea("", 0, 0, TextArea.SCROLLBARS_VERTICAL_ONLY);
+		ta_search_info_show_result = new TextArea("");
+		ta_search_info_show_result.setEditable(false);
 		
 		p_center_temp.add(ta_search_info_show_result);
 		
