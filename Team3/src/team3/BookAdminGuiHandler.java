@@ -78,7 +78,7 @@ public interface BookAdminGuiHandler {
 	// 연체 정보
 	void addDelayInfo(String delayInfo);
 	
-	
+
 	// 탑 텐
 	void addTopTenRank(String rank);
 	

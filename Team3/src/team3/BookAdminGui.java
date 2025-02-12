@@ -159,7 +159,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 	}
 	@Override
 	public Insets insets() {
-		Insets i = new Insets(60, 30, 20, 30);
+		Insets i = new Insets(60, 30, 25, 30);
 		return i;
 	}
 	
@@ -833,7 +833,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 	         
 	       Panel p_south_temp = new Panel(new BorderLayout(5,5));
 	       Panel p_south_south = new Panel();
-	       lb_user_add_msg = new Label("메세지 : ");
+	       lb_user_add_msg = new Label("");
 	       bt_user_add = new Button("등록하기");
 	       p_south_temp.add(lb_user_add_msg);
 	       p_south_south.add(bt_user_add,"South");
@@ -896,7 +896,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 
 	      Panel pSouth = new Panel(new BorderLayout(5, 5));
 	      Panel pSouthSouth = new Panel();
-	      lb_user_update_msg = new Label("메세지 : ");
+	      lb_user_update_msg = new Label("");
 	      bt_user_update = new Button("수정하기");
 	      pSouth.add(lb_user_update_msg);
 	      pSouthSouth.add(bt_user_update, "South");
@@ -947,7 +947,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 
 		Panel p_south_temp = new Panel(new BorderLayout(5, 5));
 		Panel p_south_south = new Panel();
-		lb_book_add_msg = new Label("메세지 : ");
+		lb_book_add_msg = new Label("");
 		bt_book_add = new Button("등록하기");
 		p_south_temp.add(lb_book_add_msg);
 		p_south_south.add(bt_book_add, "South");
@@ -989,7 +989,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 		
 		Panel p_south_temp = new Panel(new BorderLayout(5,5));
 		Panel p_south_south = new Panel();
-		lb_book_delete_msg = new Label("메세지 : ");
+		lb_book_delete_msg = new Label("");
 		bt_book_delete = new Button("삭제하기");
 		p_south_temp.add(lb_book_delete_msg);
 		p_south_south.add(bt_book_delete, "South");
@@ -1032,7 +1032,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 		
 		Panel p_south_temp = new Panel(new BorderLayout(5,5));
 		Panel p_south_south = new Panel();
-		lb_book_lend_msg = new Label("메세지 : ");
+		lb_book_lend_msg = new Label("");
 		bt_book_lend = new Button("대여하기");
 		bt_book_return = new Button("반납하기");
 		p_south_temp.add(lb_book_lend_msg);
