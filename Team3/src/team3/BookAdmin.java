@@ -393,6 +393,7 @@ public class BookAdmin implements BookAdminIF {
 		ps.close();
 	}
 	
+	
 	//검색하기 메서드
 	@Override
 	public void searchInfo() throws Exception{
