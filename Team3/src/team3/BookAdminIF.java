@@ -4,8 +4,6 @@ public interface BookAdminIF {
 	//로그인
 	void login() throws Exception;
 	void adminAdd() throws Exception;
-	boolean getLoginStatus();
-	void setLoginStatus(boolean st);
 	
 	// 회원 등록
 	String userList() throws Exception;

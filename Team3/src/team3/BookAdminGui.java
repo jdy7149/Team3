@@ -15,6 +15,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 	MenuBar menubar;
 	MenuItem user_add, user_update, book_add, book_delete, book_lend, search_info, delay_info, book_topten, logout;
 	Panel p_main;
+	Dialog info;
 	
 	//로그인 화면
 	Label lb_login_title, lb_login_id, lb_login_pw, lb_login_msg;
@@ -84,10 +85,12 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 	// DB 연동 기능을 탑재하지 않았을 때 메시지
 	private String featuresNotFound;
 	
+	// 로그인 상태
+	private boolean loginStatus;
 	
 	public BookAdminGui() throws Exception{
 		featuresNotFound = "DB연동 기능 사용불가";
-		
+		loginStatus = false;
 		loginView();
 		menubar = new MenuBar();
 		this.setMenuBar(menubar);
@@ -103,8 +106,13 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 		delay_info = new MenuItem("연체 정보 보기");
 		book_topten = new MenuItem("인기도서 Top10");
 		logout = new MenuItem("로그아웃");
+		info = new Dialog(this, "메세지", true);
+		info.setSize(450, 80);
+		info.setLocation(800, 400);
+		info.setLayout(new FlowLayout());
 		
-		setMenubar(false);
+		
+		setMenubar(loginStatus);
 		
 		menu.add(user_add);
 		menu.add(user_update);
@@ -134,12 +142,24 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 					}
 				}
 		);
+		info.addWindowListener(
+				new WindowAdapter() {
+					@Override
+					public void windowClosing(WindowEvent e) {
+						info.dispose();
+					}
+				}
+		);
 
 	}
 	
+	
+	public void setLoginStatus(boolean loginStatus) {
+		this.loginStatus = loginStatus;
+	}
 	@Override
 	public Insets insets() {
-		Insets i = new Insets(60, 30, 20, 50);
+		Insets i = new Insets(60, 30, 20, 30);
 		return i;
 	}
 	
@@ -159,10 +179,14 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 	@Override
 	public void setAdminAddMsg(String Message) {
 		lb_admin_add_msg.setText(Message);
+		info.add(lb_admin_add_msg);
+		info.setVisible(true);
 	}
 	@Override
 	public void setLoginMsg(String Message) {
-		lb_login_msg.setText(Message);	
+		lb_login_msg.setText(Message);
+		info.add(lb_login_msg);
+		info.setVisible(true);
 	}
 	
 	@Override
@@ -215,6 +239,8 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 	@Override
 	public void setUserAddMsg(String message) {
 		lb_user_add_msg.setText(message);
+		info.add(lb_user_add_msg);
+		info.setVisible(true);
 	}
 
 	@Override
@@ -286,6 +312,8 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 	public void setUserUpdateMsg(String message) {
 		// TODO Auto-generated method stub
 		lb_user_update_msg.setText(message);
+		info.add(lb_user_update_msg);
+		info.setVisible(true);
 	}
 
 	@Override
@@ -317,6 +345,8 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 	@Override
 	public void setBookAddMsg(String message) {
 		lb_book_add_msg.setText(message);
+		info.add(lb_book_add_msg);
+		info.setVisible(true);
 	}
 
 	@Override
@@ -332,6 +362,8 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 	@Override
 	public void setBookDeleteMsg(String message) {
 		lb_book_delete_msg.setText(message);
+		info.add(lb_book_delete_msg);
+		info.setVisible(true);
 	}
 
 	@Override
@@ -352,6 +384,8 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 	@Override
 	public void setBookLendMsg(String message) {
 		lb_book_lend_msg.setText(message);
+		info.add(lb_book_lend_msg);
+		info.setVisible(true);
 	}
 
 	@Override
@@ -497,6 +531,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 		} else if (features != null) {
 		
 			if(obj == bt_user_add) {
+				info.removeAll();
 				try {
 					features.userAdd();
 				} catch (Exception e1) {
@@ -504,6 +539,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 					e1.printStackTrace();
 				}
 			} else if (obj == bt_user_update) {
+				info.removeAll();
 				try {
 					features.userUpdate();
 				} catch (Exception e1) {
@@ -511,6 +547,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 					e1.printStackTrace();
 				}
 			} else if (obj == bt_user_update_uinfo) {
+				info.removeAll();
 				try {
 					features.userInfo();
 				} catch (Exception e1) {
@@ -518,6 +555,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 					e1.printStackTrace();
 				}
 			}else if(obj == bt_book_lend) {
+				info.removeAll();
 				try {
 					features.bookLend();
 				} catch (Exception e1) {
@@ -525,6 +563,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 					e1.printStackTrace();
 				}
 			}else if(obj == bt_book_add) {
+				info.removeAll();
 				try {
 					features.bookAdd();
 				} catch (Exception e1) {
@@ -532,6 +571,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 					e1.printStackTrace();
 				}	
 			}else if(obj == bt_book_return) {
+				info.removeAll();
 				try {
 					features.bookReturn();
 				} catch (Exception e1) {
@@ -539,6 +579,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 					e1.printStackTrace();
 				}
 			}else if(obj == bt_book_delete) {
+				info.removeAll();
 				try {
 					features.bookDelete();
 				} catch (Exception e1) {
@@ -564,24 +605,36 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 				this.add(p_main);
 				this.validate();
 			}else if(obj == bt_login) {
+				info.removeAll();
 				try {
 					features.login();
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				if(features.getLoginStatus()== true) {
+				if(loginStatus == true) {
 					this.remove(p_main);
-					mainScreen();
+					topTenView();
 					this.add(p_main);
 					this.validate();
+					if (features != null) {
+						try {
+							features.topTen();
+							p_main_rank.revalidate();
+						} catch (Exception e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					}
 				}
 			}else if(obj == bt_login_add) {
+				info.removeAll();
 				this.remove(p_main);
 				adminAddView();
 				this.add(p_main);
 				this.validate();
 			}else if(obj == bt_admin_add) {
+				info.removeAll();
 				try {
 					features.adminAdd();
 				} catch (Exception e1) {
@@ -589,6 +642,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 					e1.printStackTrace();
 				}
 			}else if(obj == bt_admin_add_home) {
+				info.removeAll();
 				this.remove(p_main);
 				loginView();
 				this.add(p_main);
@@ -613,7 +667,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 			Panel p_main_north = new Panel(new GridLayout(4, 1, 10, 10));
 			Panel p_main_east = new Panel(new GridLayout(1, 1, 10, 10));
 			Panel p_main_west = new Panel(new GridLayout(1, 1, 10, 10));
-			Panel p_main_south = new Panel(new GridLayout(4, 1, 10, 10));
+			Panel p_main_south = new Panel(new GridLayout(5, 1, 7, 7));
 			Panel p_main_center = new Panel(new GridLayout(2, 3, 10, 10));
 			
 			lb_login_title = new Label("도서관리 프로그램 v3.0", Label.CENTER);
@@ -658,8 +712,8 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 
 		//로그아웃 메서드
 		public void logout() {
-			features.setLoginStatus(false);
-			setMenubar(features.getLoginStatus());
+			loginStatus = false;
+			setMenubar(loginStatus);
 			loginView();
 		}
 
@@ -678,11 +732,11 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 		//관리자 회원가입 화면 메서드
 		public void adminAddView() {
 			p_main = new Panel(new BorderLayout());
-			Panel p_main_north = new Panel(new GridLayout(2, 1, 10, 10));
+			Panel p_main_north = new Panel(new GridLayout(3, 1, 10, 10));
 			Panel p_main_east = new Panel(new GridLayout(1, 1, 10, 10));
 			Panel p_main_west = new Panel(new GridLayout(1, 1, 10, 10));
 			Panel p_main_south = new Panel(new BorderLayout(10, 10));
-			Panel p_main_south_center = new Panel(new GridLayout(3, 5, 10, 10));
+			Panel p_main_south_center = new Panel(new GridLayout(3, 5, 5, 5));
 			Panel p_main_center = new Panel(new GridLayout(4, 2, 10, 10));
 			
 			lb_admin_add_title = new Label("회원가입", Label.CENTER);
@@ -698,16 +752,11 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 			bt_admin_add = new Button("회원가입");
 			bt_admin_add_home = new Button("처음으로");
 			
-			p_main_north.add(lb_admin_add_title);
 			p_main_north.add(new Label());
+			p_main_north.add(lb_admin_add_title);
 			p_main_east.add(new Label("                                                           "));
 			p_main_west.add(new Label("                                                           "));
 			p_main_south_center.add(new Label());		
-			p_main_south_center.add(new Label());
-			p_main_south_center.add(new Label());
-			p_main_south_center.add(new Label());
-			p_main_south_center.add(new Label());
-			p_main_south_center.add(new Label());
 			p_main_south_center.add(new Label());
 			p_main_south_center.add(bt_admin_add);
 			p_main_south_center.add(new Label());
@@ -715,6 +764,11 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 			p_main_south_center.add(new Label());
 			p_main_south_center.add(new Label());
 			p_main_south_center.add(bt_admin_add_home);
+			p_main_south_center.add(new Label());
+			p_main_south_center.add(new Label());
+			p_main_south_center.add(new Label());
+			p_main_south_center.add(new Label());
+			p_main_south_center.add(new Label());
 			
 			p_main_south.add(lb_admin_add_msg, "North");
 			p_main_south.add(p_main_south_center);
@@ -834,8 +888,8 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 
 	      pCenterCenter.add(new Label("회원 정보 현황", Label.CENTER), "North");
 	      pCenterCenter.add(ta_user_update_list, "Center");
-	      Font font=new Font("Arial",Font.PLAIN,11);
-	      ta_user_update_list.setFont(font);
+
+
 	      pCenter.add(pCenterWest, "West");
 	      pCenter.add(pCenterCenter, "Center");
 	      p_main.add(pCenter, "Center");
@@ -851,7 +905,6 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 
 	      bt_user_update_uinfo.addActionListener(this);
 	      bt_user_update.addActionListener(this);
-
 	   }
 
 	   
@@ -958,9 +1011,9 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 		Panel p_center_temp_center = new Panel(new BorderLayout(5,5));
 		
 		lb_book_lend_pid = new Label("회원 번호 : ");
-		tf_book_lend_pid = new TextField();
+		tf_book_lend_pid = new TextField("");
 		lb_book_lend_bid = new Label("책 번호     : ");
-		tf_book_lend_bid = new TextField();
+		tf_book_lend_bid = new TextField("");
 		ta_book_lend_list = new TextArea(str,0,0,ta_book_lend_list.SCROLLBARS_VERTICAL_ONLY);
 		ta_book_lend_list.setEditable(false);		
 		
@@ -1141,10 +1194,10 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 	
 	public void topTenView() {
 		p_main = new Panel(new BorderLayout(20, 20));
-		lb_rank_info_title = new Label("인기 도서 Top10", Label.CENTER);
-		p_main.add(lb_rank_info_title, "North");
-		p_main_rank = new Panel(new BorderLayout(5, 5));
-		p_main_rank_center = new Panel(new GridLayout(10,1,5,5));
+		lb_rank_info_title = new Label("인기도서 Top10", Label.CENTER);
+		p_main_rank = new Panel(new BorderLayout());
+		p_main_rank_center = new Panel(new GridLayout(11,1,2,2));
+		p_main_rank_center.add(lb_rank_info_title);
 	
 		p_main_rank.add(p_main_rank_center, "Center");
 		p_main.add(p_main_rank, "Center");
