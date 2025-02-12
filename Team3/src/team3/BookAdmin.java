@@ -9,13 +9,11 @@ public class BookAdmin implements BookAdminIF {
 	private BookAdminGuiHandler gui;
 	private Connection con;
 	private int lendLimit;
-	private boolean login_info;
 	
 	public BookAdmin(BookAdminGuiHandler gui, Connection con) throws Exception {
 		this.gui = gui;
 		this.con = con;
 		lendLimit = 5;
-		login_info = false;
 	}
 	
 	public int getLendLimit() {
@@ -28,10 +26,7 @@ public class BookAdmin implements BookAdminIF {
 
 	
 	@Override
-	public void setLoginStatus(boolean st) {
-		this.login_info = st;
-		
-	}
+
 	public void login() throws Exception{
 		Class.forName("oracle.jdbc.driver.OracleDriver");
 	    String url = "jdbc:oracle:thin:@localhost:1521:xe";
@@ -44,8 +39,8 @@ public class BookAdmin implements BookAdminIF {
 	    ps.setString(2, gui.getloginPw());
 	    ResultSet rs = ps.executeQuery();
 	    if(rs.next()) {
-	    	login_info = true;
-	    	gui.setMenubar(login_info);
+	    	gui.setLoginStatus(true);
+	    	gui.setMenubar(true);
 	    }else {
 	    	if(gui.getloginId().equals("")||gui.getloginPw().equals("")) {
 	    		gui.setLoginMsg("로그인 정보가 입력되지 않았습니다. 입력한 로그인 정보를 확인해주세요.");
@@ -71,7 +66,7 @@ public class BookAdmin implements BookAdminIF {
 	    ResultSet rs = ps.executeQuery();
 	    if(rs.next()) {
 	    	if(gui.getAdminId().equals("") || gui.getAdminPw().equals("") || gui.getAdminKey().equals("")) {
-	    		gui.setAdminAddMsg("입력 정보가 모두 입려되지 않았습니다. 입력 정보를 확인해주세요.");	    			    		
+	    		gui.setAdminAddMsg("입력 정보가 모두 입력되지 않았습니다. 입력 정보를 확인해주세요.");	    			    		
 	    	}else {
 	    		if(gui.getAdminKey().equals("1234")) {
 	    			gui.setAdminAddMsg("중복된 ID입니다.");	    			    			    		
@@ -112,7 +107,7 @@ public class BookAdmin implements BookAdminIF {
 		String sql = "select person_id, person_name, addr, tel, birth from person order by person_id asc";
 	    PreparedStatement ps = con.prepareStatement(sql);
 	    ResultSet rs = ps.executeQuery();
-	    String str = "회원번호   이름\t      주소        연락처\t        생년월일\n";
+	    String str = "회원번호   이름\t      주소        연락처\t         생년월일\n";
 	    while(rs.next()) {
 	       str = str + rs.getInt("person_id")+"\t   "+String.format("%-"+(15-(rs.getString("person_name").length()*2))+"s", rs.getString("person_name"))
 	       		+ String.format("%-"+(14-(rs.getString("addr").length()*2))+"s", rs.getString("addr"))
@@ -154,7 +149,7 @@ public class BookAdmin implements BookAdminIF {
 	public void userInfo() throws Exception {
 		String sql = "select * from person where person_id = ?";
 		PreparedStatement ps = con.prepareStatement(sql);
-		ps.setInt(1, Integer.parseInt(gui.getUserUpdateId()));
+		ps.setString(1, gui.getUserUpdateId());
 		ResultSet rs = ps.executeQuery();
 		if (rs.next()) {
 			gui.setUserUpdateName(rs.getString("person_name"));
@@ -179,7 +174,6 @@ public class BookAdmin implements BookAdminIF {
 		if (gui.getUserUpdateName().equals("") || gui.getUserUpdateAddr().equals("")
 				|| gui.getUserUpdateTel().equals("") || gui.getUserUpdateBirth().equals("")) {
 			gui.setUserUpdateMsg("입력되지 않은 정보가 있습니다. 입력 정보를 확인해주세요.");
-			;
 		} else {
 			String sql = "update person set person_name = ? , addr = ?, tel = ?, birth = ? where person_id = ?";
 			PreparedStatement ps = con.prepareStatement(sql);
@@ -190,7 +184,7 @@ public class BookAdmin implements BookAdminIF {
 			ps.setString(5, gui.getUserUpdateId());
 			int count = ps.executeUpdate();
 			if (count > 0) {
-				gui.setUserUpdateMsg(gui.getUserUpdateName() + " 님의 정보가 수정 되었습니다.");
+				gui.setUserUpdateMsg(gui.getUserUpdateName() + " 님의 정보가 변경되었습니다.");
 				;
 				gui.setUserUpdateId("");
 				gui.setUserUpdateName("");
@@ -237,7 +231,7 @@ public class BookAdmin implements BookAdminIF {
 	    genreId.put("문학",	 "literature_sq.NEXTVAL");
 	    genreId.put("과학",	 "science_sq.NEXTVAL");
 	    
-	    if(gui.getBookAddtitle().equals("") || gui.getBookAddAuthor().equals("") || gui.getBookAddPublisher().equals("")) {
+	    if(gui.getBookAddtitle().equals("") || gui.getBookAddGenre().equals("") || gui.getBookAddAuthor().equals("") || gui.getBookAddPublisher().equals("")) {
 	    	gui.setBookAddMsg("입력되지 않은 정보가 있습니다. 입력 정보를 확인해주세요.");
 	    }
 	    else {
@@ -268,7 +262,7 @@ public class BookAdmin implements BookAdminIF {
 			ps.setString(1, gui.getBookDeleteId());
 			int count = ps.executeUpdate();
 			if(count == 0) {
-				gui.setBookDeleteMsg("해당 책은 등록되지 않았습니다.");
+				gui.setBookDeleteMsg("해당 책은 등록되어있지 않습니다.");
 			}else {
 					gui.setBookDeleteMsg(gui.getBookDeleteId() + " 번 책의 정보가 삭제 되었습니다.");
 			}
@@ -297,51 +291,54 @@ public class BookAdmin implements BookAdminIF {
 	//책 대여 메서드
 	@Override
 	public void bookLend() throws Exception{
-
-		int person_id = Integer.parseInt(gui.getBookLendPid());
-		int book_id = Integer.parseInt(gui.getBookLendBid());
+		String person_id = gui.getBookLendPid();
+		String book_id = gui.getBookLendBid();
 		int count = 0;
 		String sql = "select * from records where person_id=?";
 		PreparedStatement ps = con.prepareStatement(sql);
-		ps.setInt(1, person_id);
+		ps.setString(1, person_id);
 		ResultSet rs = ps.executeQuery();
-		while(rs.next()) {
-			count++;
-		}
-		if(count >= lendLimit) {
-			gui.setBookLendMsg(person_id+"번 사용자님은 이미 " + lendLimit +"권의 책을 빌리셨습니다. 반납 후 이용해주세요.");			
-		}
-		else {
-			sql = "select * from records where book_id=?";
-			ps = con.prepareStatement(sql);
-			ps.setInt(1, book_id);
-			rs = ps.executeQuery();
-			if(rs.next()) {
-				gui.setBookLendMsg(book_id+"번 책은 대여 된 상태입니다.");
+		if(gui.getBookLendBid().equals("") || gui.getBookLendPid().equals("")) {
+			gui.setBookLendMsg("입력되지 않은 정보가 있습니다. 입력 정보를 확인해주세요.");
+		}else {
+			while(rs.next()) {
+				count++;
+			}
+			if(count >= lendLimit) {
+				gui.setBookLendMsg(person_id+"번 사용자님은 이미 " + lendLimit +"권의 책을 빌리셨습니다. 반납 후 이용해주세요.");			
 			}
 			else {
-				sql = "select * from book where book_id=?";
+				sql = "select * from records where book_id=?";
 				ps = con.prepareStatement(sql);
-				ps.setInt(1, book_id);
+				ps.setString(1, book_id);
 				rs = ps.executeQuery();
 				if(rs.next()) {
-					sql = "update book set lend_count=lend_count+1 where book_id=?";
-					ps = con.prepareStatement(sql);
-					ps.setInt(1, book_id);
-					ps.executeUpdate();
-					sql = "insert into records (book_id,person_id) values (?,?)";
-					ps = con.prepareStatement(sql);
-					ps.setInt(1, book_id);
-					ps.setInt(2, person_id);
-					ps.executeUpdate();
-					gui.setBookLendMsg(person_id+"번 사용자님의"+book_id+"번 책 대여가 완료되었습니다.");
+					gui.setBookLendMsg(book_id+"번 책은 대여 된 상태입니다.");
 				}
 				else {
-					gui.setBookLendMsg(book_id+"번 책은 등록되지 않았습니다. 책 번호를 확인해주세요.");				
+					sql = "select * from book where book_id=?";
+					ps = con.prepareStatement(sql);
+					ps.setString(1, book_id);
+					rs = ps.executeQuery();
+					if(rs.next()) {
+						sql = "update book set lend_count=lend_count+1 where book_id=?";
+						ps = con.prepareStatement(sql);
+						ps.setString(1, book_id);
+						ps.executeUpdate();
+						sql = "insert into records (book_id,person_id) values (?,?)";
+						ps = con.prepareStatement(sql);
+						ps.setString(1, book_id);
+						ps.setString(2, person_id);
+						ps.executeUpdate();
+						gui.setBookLendMsg(person_id+"번 사용자님의"+book_id+"번 책 대여가 완료되었습니다.");
+					}
+					else {
+						gui.setBookLendMsg(book_id+"번 책은 등록되지 않았습니다. 책 번호를 확인해주세요.");				
+					}
 				}
 			}
+			
 		}
-		
 		gui.setBookLendList(bookLendList());
 		rs.close();
 		ps.close();
@@ -351,33 +348,35 @@ public class BookAdmin implements BookAdminIF {
 	//책 반납 메서드
 	@Override
 	public void bookReturn() throws Exception{
-
-		int person_id = Integer.parseInt(gui.getBookLendPid());
-		int book_id = Integer.parseInt(gui.getBookLendBid());
+		String person_id = gui.getBookLendPid();
+		String book_id = gui.getBookLendBid();
 		String sql = "select * from book where book_id=?";
 		PreparedStatement ps = con.prepareStatement(sql);
-		ps.setInt(1, book_id);
+		ps.setString(1, book_id);
 		ResultSet rs = ps.executeQuery();
-		if(rs.next()) {
-			sql = "select * from records where book_id=? and person_id=?";
-			ps = con.prepareStatement(sql);
-			ps.setInt(1, book_id);
-			ps.setInt(2, person_id);
-			ps.executeUpdate();
-			rs = ps.executeQuery();
-			if(rs.next()) {
-				sql = "delete from records where book_id=?";
-				ps = con.prepareStatement(sql);
-				ps.setInt(1, book_id);
-				ps.executeUpdate();
-				gui.setBookLendMsg(person_id+"번 사용자로부터 "+book_id+"번 책이 반납되었습니다.");
-			}else {
-				gui.setBookLendMsg(person_id+"사용자님은 "+book_id+"번 책을 대여하지 않았습니다. 책 번호를 확인해주세요.");
-			}
+		if(gui.getBookLendBid().equals("") || gui.getBookLendPid().equals("")) {
+			gui.setBookLendMsg("입력되지 않은 정보가 있습니다. 입력 정보를 확인해주세요.");
 		}else {
-			gui.setBookLendMsg(book_id+"번 책은 등록되지 않았습니다. 책 번호를 확인해주세요.");
+			if(rs.next()) {
+				sql = "select * from records where book_id=? and person_id=?";
+				ps = con.prepareStatement(sql);
+				ps.setString(1, book_id);
+				ps.setString(2, person_id);
+				ps.executeUpdate();
+				rs = ps.executeQuery();
+				if(rs.next()) {
+					sql = "delete from records where book_id=?";
+					ps = con.prepareStatement(sql);
+					ps.setString(1, book_id);
+					ps.executeUpdate();
+					gui.setBookLendMsg(person_id+"번 사용자로부터 "+book_id+"번 책이 반납되었습니다.");
+				}else {
+					gui.setBookLendMsg(person_id+"사용자님은 "+book_id+"번 책을 대여하지 않았습니다. 책 번호를 확인해주세요.");
+				}
+			}else {
+				gui.setBookLendMsg(book_id+"번 책은 등록되지 않았습니다. 책 번호를 확인해주세요.");
+			}
 		}
-		
 		gui.setBookLendList(bookLendList());
 		rs.close();
 		ps.close();
@@ -392,8 +391,8 @@ public class BookAdmin implements BookAdminIF {
 		if (gui.getBookSearchState()) {
 			PreparedStatement ps = con.prepareStatement("SELECT book_id, book_name, author, publisher, genre, "
 					+ "    CASE "
-					+ "        WHEN book_id IN (SELECT book_id FROM records) THEN '이미 대여됨' "
-					+ "        ELSE '대여 가능' "
+					+ "        WHEN book_id IN (SELECT book_id FROM records) THEN '대여불가' "
+					+ "        ELSE '대여가능' "
 					+ "    END AS status "
 					+ "FROM book, genres "
 					+ "WHERE book_id BETWEEN min AND max "
@@ -422,7 +421,8 @@ public class BookAdmin implements BookAdminIF {
 					+ "              FROM records "
 					+ "              GROUP BY person_id) lend_per_person "
 					+ "WHERE person.person_id = lend_per_person.person_id(+) "
-					+ "AND person_name LIKE ?");
+					+ "AND person_name LIKE ?"
+					+ "ORDER BY person_id ASC");
 			ps.setString(1, "%" + key + "%");
 			ResultSet rs = ps.executeQuery();
 			
@@ -486,9 +486,5 @@ public class BookAdmin implements BookAdminIF {
 		ps.close();
 	}
 
-	@Override
-	public boolean getLoginStatus() {
-		return login_info;
-	}
 
 } 

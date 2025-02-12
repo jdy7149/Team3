@@ -24,6 +24,7 @@ public class BookAdminMain {
 			gui.setFeatures(features);
 			
 			gui.setSize(600,400);
+			gui.setLocation(730,250);
 			gui.setVisible(true);
 			gui.setResizable(false);
 			

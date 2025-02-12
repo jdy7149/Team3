@@ -6,7 +6,7 @@ public interface BookAdminGuiHandler {
 	String getloginPw();
 	void setLoginMsg(String Message);
 	void setMenubar(boolean login_info);
-	
+	void setLoginStatus(boolean st);
 	//회원가입
 	String getAdminId();
 	String getAdminPw();
