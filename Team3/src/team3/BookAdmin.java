@@ -481,7 +481,7 @@ public class BookAdmin implements BookAdminIF {
 		
 		String sql = "select records_id,person_name,book_name,to_char(TRUNC(r.event_time),'YYYY-MM-DD')as event_time\r\n"
 				+ "from records r,book b,person p\r\n" + "where r.book_id=b.book_id\r\n"
-				+ "and r.person_id=p.person_id\r\n" + "and event_time+14 < " + deadline + " systimestamp";// 대여한지 2주 지난 회원 확인
+				+ "and r.person_id=p.person_id\r\n" + "and event_time+ " + deadline + " < systimestamp";// 대여한지 2주 지난 회원 확인
 		PreparedStatement ps = con.prepareStatement(sql);
 		ResultSet rs = ps.executeQuery();
 		
