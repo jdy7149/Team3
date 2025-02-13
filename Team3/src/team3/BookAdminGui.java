@@ -1248,9 +1248,10 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 				if(e.getStateChange()==ItemEvent.SELECTED) {
 					p_main_s_one.remove(day_delay);
 					String[] selected=l_delay.getSelectedItem().split(" ");
+					System.out.println(Arrays.toString(selected));
 					try {
 						SimpleDateFormat time_format = new SimpleDateFormat("yyyy-MM-dd");
-						Date selectedDate = time_format.parse(selected[selected.length-25]);
+						Date selectedDate = time_format.parse(selected[selected.length-23]);
 						Date now = new Date();
 
 						long delay_time = (now.getTime() - selectedDate.getTime()) / (24 * 60 * 60 * 1000);

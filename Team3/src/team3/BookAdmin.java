@@ -476,16 +476,16 @@ public class BookAdmin implements BookAdminIF {
 		ResultSet rs = ps.executeQuery();
 		
 		String blank=" ";
-		int a=40;
-		int b=40;
+		int a=35;
+		int b=34;
 
 		while (rs.next()) {
 			
 			a-=String.valueOf(rs.getInt("records_id")).length();
 			b-=3*(rs.getString("person_name").length());
-			gui.addDelayInfo(rs.getInt("records_id")+blank.repeat(a+4)+rs.getString("person_name")+blank.repeat(b+3)+rs.getString("event_time")+blank.repeat(24)+rs.getString("book_name"));
-			a=40;
-			b=40;
+			gui.addDelayInfo(rs.getInt("records_id")+blank.repeat(a+4)+rs.getString("person_name")+blank.repeat(b+3)+rs.getString("event_time")+blank.repeat(22)+rs.getString("book_name"));
+			a=35;
+			b=34;
 		}
 		rs.close();
 		ps.close();
