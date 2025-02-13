@@ -20,7 +20,7 @@ public class BookAdminMain {
 			// DB 연동기능 생성
 			BookAdmin features = new BookAdmin(gui, con);
 			
-			// DB 여농기능 탑재
+			// 기능 탑재
 			gui.setFeatures(features);
 			
 			gui.setSize(600,400);

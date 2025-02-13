@@ -3,7 +3,7 @@ package team3;
 public interface BookAdminIF {
 	//로그인
 	void login() throws Exception;
-	void adminAdd() throws Exception;
+	void register() throws Exception;
 	
 	// 회원 등록
 	String userList() throws Exception;
@@ -26,6 +26,7 @@ public interface BookAdminIF {
 	
 	// 연체 정보 보기
 	void delayInfo() throws Exception;
+	int getDeadline();
 	
 	
 	// 탑 텐
