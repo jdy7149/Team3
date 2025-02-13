@@ -9,13 +9,14 @@ public class BookAdmin implements BookAdminIF {
 	private BookAdminGuiHandler gui;
 	private Connection con;
 	private int lendLimit;
+	private int deadline;
 	
 	public BookAdmin(BookAdminGuiHandler gui, Connection con) throws Exception {
 		this.gui = gui;
 		this.con = con;
 		lendLimit = 5;
+		deadline = 14;
 	}
-	
 	public int getLendLimit() {
 		return lendLimit;
 	}
@@ -23,10 +24,17 @@ public class BookAdmin implements BookAdminIF {
 	public void setLendLimit(int lendLimit) {
 		this.lendLimit = lendLimit;
 	}
-
 	
-	@Override
+	public int getDeadline() {
+		return deadline;
+	}
 
+	public void setDeadline(int deadline) {
+		this.deadline = deadline;
+	}
+
+
+	@Override
 	public void login() throws Exception{
 		Class.forName("oracle.jdbc.driver.OracleDriver");
 	    String url = "jdbc:oracle:thin:@localhost:1521:xe";
@@ -54,7 +62,7 @@ public class BookAdmin implements BookAdminIF {
 	}
 
 	//회원가입 메서드
-	public void adminAdd() throws Exception{
+	public void register() throws Exception{
 		Class.forName("oracle.jdbc.driver.OracleDriver");
 	    String url = "jdbc:oracle:thin:@localhost:1521:xe";
 	    String user = "scott";
@@ -473,7 +481,7 @@ public class BookAdmin implements BookAdminIF {
 		
 		String sql = "select records_id,person_name,book_name,to_char(TRUNC(r.event_time),'YYYY-MM-DD')as event_time\r\n"
 				+ "from records r,book b,person p\r\n" + "where r.book_id=b.book_id\r\n"
-				+ "and r.person_id=p.person_id\r\n" + "and event_time+14>systimestamp";// 대여한지 2주 지난 회원 확인
+				+ "and r.person_id=p.person_id\r\n" + "and event_time+14 < " + deadline + " systimestamp";// 대여한지 2주 지난 회원 확인
 		PreparedStatement ps = con.prepareStatement(sql);
 		ResultSet rs = ps.executeQuery();
 		

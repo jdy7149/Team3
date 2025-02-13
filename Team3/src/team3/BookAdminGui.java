@@ -707,7 +707,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 			}else if(obj == bt_admin_add) {
 				p_north.removeAll();
 				try {
-					features.adminAdd();
+					features.register();
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -1219,7 +1219,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 
 						long delay_time = (now.getTime() - selectedDate.getTime()) / (24 * 60 * 60 * 1000);
 
-						day_delay = new Label("연체일 : " + delay_time);
+						day_delay = new Label("연체일 : " + (delay_time - features.getDeadline()));
 						p_main_s_one.add(day_delay);
 
 						p_main_c.revalidate();
