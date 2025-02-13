@@ -59,14 +59,16 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 	
 	//책 대여 반납
 	Label lb_book_lend_title, lb_book_lend_pid, lb_book_lend_bid, lb_book_lend_msg;
+	CheckboxGroup cg_lend_or_return_options;
+	Checkbox cb_lend_book, cb_return_book;
 	TextField tf_book_lend_pid, tf_book_lend_bid;
 	TextArea ta_book_lend_list;
 	Button bt_book_lend, bt_book_return;
 	
 	//검색하기
 	Label lb_search_info_title;
-	CheckboxGroup cg_options;
-	Checkbox cb_book, cb_person;
+	CheckboxGroup cg_search_options;
+	Checkbox cb_search_book, cb_search_person;
 	Button bt_search_info;
 	TextField tf_search_info_key;
 	TextArea ta_search_info_show_result;
@@ -430,7 +432,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 	public void setBookDeleteList(String bookList) {
 		ta_book_delete_list.setText(bookList);
 	}
-
+	
 	@Override
 	public String getBookLendPid() {
 		return tf_book_lend_pid.getText();
@@ -471,12 +473,12 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 
 	@Override
 	public boolean getBookSearchState() {
-		return cb_book.getState();
+		return cb_search_book.getState();
 	}
 
 	@Override
 	public boolean getPersonSearchState() {
-		return cb_person.getState();
+		return cb_search_person.getState();
 	}
 
 	@Override
@@ -1083,8 +1085,40 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 		Panel p_center_temp_west = new Panel(new GridLayout(6,2,5,16));
 		Panel p_center_temp_center = new Panel(new BorderLayout(5,5));
 		
+		cg_lend_or_return_options = new CheckboxGroup();
+		cb_lend_book = new Checkbox("대여", cg_lend_or_return_options, true);
+		cb_return_book = new Checkbox("반납", cg_lend_or_return_options, false);
+		
 		lb_book_lend_pid = new Label("회원 번호 : ");
 		tf_book_lend_pid = new TextField("");
+		
+		cb_return_book.addItemListener(new ItemListener() {
+
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				// When cb_return_book is checked disable tf_book_lend_pid
+		        if (cb_return_book.getState()) {
+		        	tf_book_lend_pid.setText("");
+		            tf_book_lend_pid.setEnabled(false);
+		            bt_book_return.setEnabled(true);
+		            bt_book_lend.setEnabled(false);
+		        }
+			}
+		});
+		
+		cb_lend_book.addItemListener(new ItemListener() {
+
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				// When cb_return_book is checked disable tf_book_lend_pid
+		        if (cb_lend_book.getState()) {
+		            tf_book_lend_pid.setEnabled(true);
+		            bt_book_lend.setEnabled(true);
+		            bt_book_return.setEnabled(false);
+		        } 
+			}
+		});
+			
 		lb_book_lend_bid = new Label("책 번호     : ");
 		tf_book_lend_bid = new TextField("");
 		ta_book_lend_list = new TextArea(str,0,0,ta_book_lend_list.SCROLLBARS_VERTICAL_ONLY);
@@ -1092,6 +1126,8 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 		
 		p_center_temp_west.add(new Label());
 		p_center_temp_west.add(new Label());
+		p_center_temp_west.add(cb_lend_book);
+		p_center_temp_west.add(cb_return_book);
 		p_center_temp_west.add(lb_book_lend_pid);
 		p_center_temp_west.add(tf_book_lend_pid);
 		p_center_temp_west.add(lb_book_lend_bid);
@@ -1108,6 +1144,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 		lb_book_lend_msg = new Label("");
 		bt_book_lend = new Button("대여하기");
 		bt_book_return = new Button("반납하기");
+		bt_book_return.setEnabled(false);
 		p_south_temp.add(lb_book_lend_msg);
 		p_south_south.add(bt_book_lend);
 		p_south_south.add(bt_book_return);
@@ -1129,13 +1166,13 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 		Panel p_top = new Panel(new FlowLayout(FlowLayout.CENTER));
 		
 		Panel p_tf_and_bt = new Panel(new GridLayout(1, 4, 5, 5));
-		cg_options = new CheckboxGroup();
-		cb_book = new Checkbox("도서명으로 검색", cg_options, true);
-		cb_person = new Checkbox("사람 이름으로 검색", cg_options, false);
+		cg_search_options = new CheckboxGroup();
+		cb_search_book = new Checkbox("도서명으로 검색", cg_search_options, true);
+		cb_search_person = new Checkbox("사람 이름으로 검색", cg_search_options, false);
 		tf_search_info_key = new TextField();
 		bt_search_info = new Button("검색");
-		p_tf_and_bt.add(cb_book);
-		p_tf_and_bt.add(cb_person);
+		p_tf_and_bt.add(cb_search_book);
+		p_tf_and_bt.add(cb_search_person);
 		p_tf_and_bt.add(tf_search_info_key);
 		p_tf_and_bt.add(bt_search_info);
 		p_top.add(p_tf_and_bt);
@@ -1211,10 +1248,9 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 				if(e.getStateChange()==ItemEvent.SELECTED) {
 					p_main_s_one.remove(day_delay);
 					String[] selected=l_delay.getSelectedItem().split(" ");
-					
 					try {
 						SimpleDateFormat time_format = new SimpleDateFormat("yyyy-MM-dd");
-						Date selectedDate = time_format.parse(selected[selected.length-23]);
+						Date selectedDate = time_format.parse(selected[selected.length-25]);
 						Date now = new Date();
 
 						long delay_time = (now.getTime() - selectedDate.getTime()) / (24 * 60 * 60 * 1000);
