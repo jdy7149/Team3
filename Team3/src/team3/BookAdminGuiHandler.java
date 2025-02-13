@@ -21,6 +21,10 @@ public interface BookAdminGuiHandler {
 	String getUserAddTel();
 	String getUserAddAddr();
 	String getUserAddBirth();
+	void setUserAddName(String name);
+	void setUserAddTel(String tel);
+	void setUserAddAddr(String addr);
+	void setUserAddBirth(String birth);
 	void setUserAddMsg(String message);
 	void setUserList(String userList);
 	
@@ -51,20 +55,27 @@ public interface BookAdminGuiHandler {
 	
 	// 책 등록
 	String getBookAddGenre();
-	String getBookAddtitle();
+	String getBookAddTitle();
 	String getBookAddAuthor();
 	String getBookAddPublisher();
+	void setBookAddTitle(String title);
+	void setBookAddGenre(String genre);
+	void setBookAddAuthor(String author);
+	void setBookAddPublisher(String publisher);
 	void setBookAddMsg(String message);
 	void setBookAddList(String bookList);
 	
 	// 책 삭제 
 	String getBookDeleteId();
+	void setBookDeleteId(String id);
 	void setBookDeleteMsg(String message);
 	void setBookDeleteList(String bookList);
 	
 	// 책 대여 
 	String getBookLendPid();
 	String getBookLendBid();
+	void setBookLendPid(String pid);
+	void setBookLendBid(String bid);
 	void setBookLendMsg(String message);
 	void setBookLendList(String bookList);
 	

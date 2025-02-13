@@ -16,6 +16,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 	MenuItem user_add, user_update, book_add, book_delete, book_lend, search_info, delay_info, book_topten, logout;
 	Panel p_main;
 	Dialog info;
+	Button bt_check;
 	
 	//로그인 화면
 	Label lb_login_title, lb_login_id, lb_login_pw, lb_login_msg;
@@ -35,6 +36,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 	TextField tf_user_add_name, tf_user_add_addr, tf_user_add_tel, tf_user_add_birth;
 	TextArea ta_user_list;
 	Button bt_user_add;
+	Panel p_north, p_south;
 	
 	
 	//사용자 정보 수정
@@ -107,9 +109,14 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 		book_topten = new MenuItem("인기도서 Top10");
 		logout = new MenuItem("로그아웃");
 		info = new Dialog(this, "메세지", true);
-		info.setSize(450, 80);
+		info.setSize(450, 110);
 		info.setLocation(800, 400);
-		info.setLayout(new FlowLayout());
+		p_north = new Panel(new FlowLayout());
+		p_south = new Panel(new FlowLayout());
+		info.setLayout(new BorderLayout());
+		info.add(p_north, "North");
+		info.add(p_south, "Center");
+		bt_check = new Button("확인");
 		
 		
 		setMenubar(loginStatus);
@@ -134,6 +141,8 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 		delay_info.addActionListener(this);
 		book_topten.addActionListener(this);
 		logout.addActionListener(this);
+		bt_check.addActionListener(this);
+
 		this.addWindowListener(
 				new WindowAdapter() {
 					@Override
@@ -179,13 +188,15 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 	@Override
 	public void setAdminAddMsg(String Message) {
 		lb_admin_add_msg.setText(Message);
-		info.add(lb_admin_add_msg);
+		p_south.add(bt_check);
+		p_north.add(lb_admin_add_msg);
 		info.setVisible(true);
 	}
 	@Override
 	public void setLoginMsg(String Message) {
 		lb_login_msg.setText(Message);
-		info.add(lb_login_msg);
+		p_south.add(bt_check);
+		p_north.add(lb_login_msg);
 		info.setVisible(true);
 	}
 	
@@ -239,8 +250,29 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 	@Override
 	public void setUserAddMsg(String message) {
 		lb_user_add_msg.setText(message);
-		info.add(lb_user_add_msg);
+		p_south.add(bt_check);
+		p_north.add(lb_user_add_msg);
 		info.setVisible(true);
+	}
+	@Override
+	public void setUserAddName(String name) {
+		tf_user_add_name.setText(name);
+		
+	}
+	@Override
+	public void setUserAddTel(String tel) {
+		tf_user_add_tel.setText(tel);
+		
+	}
+	@Override
+	public void setUserAddAddr(String addr) {
+		tf_user_add_addr.setText(addr);
+		
+	}
+	@Override
+	public void setUserAddBirth(String birth) {
+		tf_user_add_birth.setText(birth);
+		
 	}
 
 	@Override
@@ -312,7 +344,8 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 	public void setUserUpdateMsg(String message) {
 		// TODO Auto-generated method stub
 		lb_user_update_msg.setText(message);
-		info.add(lb_user_update_msg);
+		p_south.add(bt_check);
+		p_north.add(lb_user_update_msg);
 		info.setVisible(true);
 	}
 
@@ -328,7 +361,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 	}
 
 	@Override
-	public String getBookAddtitle() {
+	public String getBookAddTitle() {
 		return tf_book_add_bname.getText();
 	}
 
@@ -341,17 +374,43 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 	public String getBookAddPublisher() {
 		return tf_book_add_publisher.getText();
 	}
+	
+	@Override
+	public void setBookAddTitle(String title) {
+		tf_book_add_bname.setText(title);
+	}
+	
+	@Override
+	public void setBookAddGenre(String genre) {
+		tf_book_add_genre.setText(genre);
+	}
+	
+	@Override
+	public void setBookAddAuthor(String author) {
+		tf_book_add_author.setText(author);
+	}
+	
+	@Override
+	public void setBookAddPublisher(String publisher) {
+		tf_book_add_publisher.setText(publisher);	
+	}
 
 	@Override
 	public void setBookAddMsg(String message) {
 		lb_book_add_msg.setText(message);
-		info.add(lb_book_add_msg);
+		p_south.add(bt_check);
+		p_north.add(lb_book_add_msg);
 		info.setVisible(true);
 	}
 
 	@Override
 	public void setBookAddList(String bookList) {
 		ta_book_add_list.setText(bookList);
+	}
+	
+	@Override
+	public void setBookDeleteId(String id) {
+		tf_book_delete_bid.setText(id);	
 	}
 	
 	@Override
@@ -362,7 +421,8 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 	@Override
 	public void setBookDeleteMsg(String message) {
 		lb_book_delete_msg.setText(message);
-		info.add(lb_book_delete_msg);
+		p_south.add(bt_check);
+		p_north.add(lb_book_delete_msg);
 		info.setVisible(true);
 	}
 
@@ -382,9 +442,20 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 	}
 
 	@Override
+	public void setBookLendPid(String pid) {
+		tf_book_lend_pid.setText(pid);
+	}
+	
+	@Override
+	public void setBookLendBid(String bid) {
+		tf_book_lend_bid.setText(bid);
+	}
+	
+	@Override
 	public void setBookLendMsg(String message) {
 		lb_book_lend_msg.setText(message);
-		info.add(lb_book_lend_msg);
+		p_south.add(bt_check);
+		p_north.add(lb_book_lend_msg);
 		info.setVisible(true);
 	}
 
@@ -531,7 +602,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 		} else if (features != null) {
 		
 			if(obj == bt_user_add) {
-				info.removeAll();
+				p_north.removeAll();
 				try {
 					features.userAdd();
 				} catch (Exception e1) {
@@ -539,7 +610,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 					e1.printStackTrace();
 				}
 			} else if (obj == bt_user_update) {
-				info.removeAll();
+				p_north.removeAll();
 				try {
 					features.userUpdate();
 				} catch (Exception e1) {
@@ -547,7 +618,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 					e1.printStackTrace();
 				}
 			} else if (obj == bt_user_update_uinfo) {
-				info.removeAll();
+				p_north.removeAll();
 				try {
 					features.userInfo();
 				} catch (Exception e1) {
@@ -555,7 +626,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 					e1.printStackTrace();
 				}
 			}else if(obj == bt_book_lend) {
-				info.removeAll();
+				p_north.removeAll();
 				try {
 					features.bookLend();
 				} catch (Exception e1) {
@@ -563,7 +634,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 					e1.printStackTrace();
 				}
 			}else if(obj == bt_book_add) {
-				info.removeAll();
+				p_north.removeAll();
 				try {
 					features.bookAdd();
 				} catch (Exception e1) {
@@ -571,7 +642,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 					e1.printStackTrace();
 				}	
 			}else if(obj == bt_book_return) {
-				info.removeAll();
+				p_north.removeAll();
 				try {
 					features.bookReturn();
 				} catch (Exception e1) {
@@ -579,7 +650,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 					e1.printStackTrace();
 				}
 			}else if(obj == bt_book_delete) {
-				info.removeAll();
+				p_north.removeAll();
 				try {
 					features.bookDelete();
 				} catch (Exception e1) {
@@ -605,7 +676,7 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 				this.add(p_main);
 				this.validate();
 			}else if(obj == bt_login) {
-				info.removeAll();
+				p_north.removeAll();
 				try {
 					features.login();
 				} catch (Exception e1) {
@@ -628,13 +699,13 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 					}
 				}
 			}else if(obj == bt_login_add) {
-				info.removeAll();
+				p_north.removeAll();
 				this.remove(p_main);
 				adminAddView();
 				this.add(p_main);
 				this.validate();
 			}else if(obj == bt_admin_add) {
-				info.removeAll();
+				p_north.removeAll();
 				try {
 					features.adminAdd();
 				} catch (Exception e1) {
@@ -642,11 +713,13 @@ public class BookAdminGui extends Frame implements ActionListener, BookAdminGuiH
 					e1.printStackTrace();
 				}
 			}else if(obj == bt_admin_add_home) {
-				info.removeAll();
+				p_north.removeAll();
 				this.remove(p_main);
 				loginView();
 				this.add(p_main);
 				this.validate();
+			}else if(obj == bt_check) {
+				info.dispose();
 			}
 		}
 	}

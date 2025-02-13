@@ -137,8 +137,12 @@ public class BookAdmin implements BookAdminIF {
 			ps.setString(3, gui.getUserAddAddr());
 			ps.setString(4, gui.getUserAddBirth());
 			ps.executeUpdate();
-
+			
 			gui.setUserAddMsg(gui.getUserAddName() + "님의 등록이 완료되었습니다.");
+			gui.setUserAddName("");
+			gui.setUserAddTel("");
+			gui.setUserAddAddr("");
+			gui.setUserAddBirth("");
 
 			gui.setUserList(userList());
 			ps.close();
@@ -231,7 +235,7 @@ public class BookAdmin implements BookAdminIF {
 	    genreId.put("문학",	 "literature_sq.NEXTVAL");
 	    genreId.put("과학",	 "science_sq.NEXTVAL");
 	    
-	    if(gui.getBookAddtitle().equals("") || gui.getBookAddGenre().equals("") || gui.getBookAddAuthor().equals("") || gui.getBookAddPublisher().equals("")) {
+	    if(gui.getBookAddTitle().equals("") || gui.getBookAddGenre().equals("") || gui.getBookAddAuthor().equals("") || gui.getBookAddPublisher().equals("")) {
 	    	gui.setBookAddMsg("입력되지 않은 정보가 있습니다. 입력 정보를 확인해주세요.");
 	    }
 	    else {
@@ -239,11 +243,15 @@ public class BookAdmin implements BookAdminIF {
 		     	+ "values (" + genreId.get(gui.getBookAddGenre()) + " ,?,?,?)";
 		    PreparedStatement ps = con.prepareStatement(sql);
 		      
-		    ps.setString(1, gui.getBookAddtitle());
+		    ps.setString(1, gui.getBookAddTitle());
 		    ps.setString(2, gui.getBookAddAuthor());
 		    ps.setString(3, gui.getBookAddPublisher());
 		    ps.executeUpdate();
-		    gui.setBookAddMsg(gui.getBookAddtitle() + " 책의 신규 등록이 완료되었습니다.");   
+		    gui.setBookAddMsg(gui.getBookAddTitle() + " 책의 신규 등록이 완료되었습니다.");
+		    gui.setBookAddTitle("");
+		    gui.setBookAddGenre("");
+		    gui.setBookAddAuthor("");
+		    gui.setBookAddPublisher("");
 		    gui.setBookAddList(bookList());
 		    ps.close();
 	    }
@@ -265,6 +273,7 @@ public class BookAdmin implements BookAdminIF {
 				gui.setBookDeleteMsg("해당 책은 등록되어있지 않습니다.");
 			}else {
 					gui.setBookDeleteMsg(gui.getBookDeleteId() + " 번 책의 정보가 삭제 되었습니다.");
+					gui.setBookDeleteId("");
 			}
 			gui.setBookDeleteList(bookList());
 			ps.close();
@@ -332,6 +341,8 @@ public class BookAdmin implements BookAdminIF {
 							ps.setString(2, person_id);
 							ps.executeUpdate();
 							gui.setBookLendMsg(person_id+"번 사용자님의"+book_id+"번 책 대여가 완료되었습니다.");
+							gui.setBookLendPid("");
+							gui.setBookLendBid("");
 						}
 						else {
 							gui.setBookLendMsg(book_id+"번 책은 등록되지 않았습니다. 책 번호를 확인해주세요.");				
@@ -378,6 +389,8 @@ public class BookAdmin implements BookAdminIF {
 						ps.setString(1, book_id);
 						ps.executeUpdate();
 						gui.setBookLendMsg(person_id+"번 사용자로부터 "+book_id+"번 책이 반납되었습니다.");
+						gui.setBookLendPid("");
+						gui.setBookLendBid("");
 					}else {
 						gui.setBookLendMsg(person_id+"사용자님은 "+book_id+"번 책을 대여하지 않았습니다. 책 번호를 확인해주세요.");
 					}						
