@@ -311,58 +311,60 @@ public class BookAdmin implements BookAdminIF {
 		String person_id = gui.getBookLendPid();
 		String book_id = gui.getBookLendBid();
 		int count = 0;
-		String sql = "select * from records where person_id=?";
-		PreparedStatement ps = con.prepareStatement(sql);
+		
+		PreparedStatement ps = con.prepareStatement("SELECT person.person_id, \r\n"
+				+ "    CASE \r\n"
+				+ "        WHEN NVL(count, 0) >= 5 THEN 1\r\n"
+				+ "        ELSE 0\r\n"
+				+ "    END AS exceed_limit\r\n"
+				+ "FROM person, (SELECT person_id, COUNT(person_id) AS count\r\n"
+				+ "                FROM records\r\n"
+				+ "                GROUP BY person_id) lent_per_person\r\n"
+				+ "WHERE person.person_id = lent_per_person.person_id(+)\r\n"
+				+ "AND person.person_id = ?");
 		ps.setString(1, person_id);
-		ResultSet rs = ps.executeQuery();
+		ResultSet searchPerson = ps.executeQuery();
+		
+		ps = con.prepareStatement("SELECT book_id,  \r\n"
+				+ "    CASE \r\n"
+				+ "        WHEN book_id IN (SELECT book_id FROM records) THEN 1\r\n"
+				+ "        ELSE 0\r\n"
+				+ "    END AS is_lent\r\n"
+				+ "FROM book\r\n"
+				+ "WHERE book_id = ?");
+		ps.setString(1, book_id);
+		ResultSet searchBook = ps.executeQuery();
+		
 		if(gui.getBookLendBid().equals("") || gui.getBookLendPid().equals("")) {
 			gui.setBookLendMsg("입력되지 않은 정보가 있습니다. 입력 정보를 확인해주세요.");
 		}else {
-			if(rs.next()) {
-				while(rs.next()) {
-					count++;
+			if (!searchPerson.next()) {
+				gui.setBookLendMsg(person_id+"번 사용자는 등록되지 않은 사용자입니다.");
+			}
+			else if (!searchBook.next()) {
+				gui.setBookLendMsg(book_id+"번 책은 등록되지 않았습니다. 책 번호를 확인해주세요.");
+			}
+			else {
+				if (searchPerson.getInt("exceed_limit") == 1) {
+					gui.setBookLendMsg(person_id+"번 사용자님은 이미 " + lendLimit +"권의 책을 빌리셨습니다. 반납 후 이용해주세요.");
 				}
-				if(count >= lendLimit) {
-					gui.setBookLendMsg(person_id+"번 사용자님은 이미 " + lendLimit +"권의 책을 빌리셨습니다. 반납 후 이용해주세요.");			
+				else if (searchBook.getInt("is_lent") == 1) {
+					gui.setBookLendMsg(book_id+"번 책은 대여 된 상태입니다.");
 				}
 				else {
-					sql = "select * from records where book_id=?";
-					ps = con.prepareStatement(sql);
+					ps = con.prepareStatement("insert into records (book_id,person_id) values (?,?)");
 					ps.setString(1, book_id);
-					rs = ps.executeQuery();
-					if(rs.next()) {
-						gui.setBookLendMsg(book_id+"번 책은 대여 된 상태입니다.");
-					}
-					else {
-						sql = "select * from book where book_id=?";
-						ps = con.prepareStatement(sql);
-						ps.setString(1, book_id);
-						rs = ps.executeQuery();
-						if(rs.next()) {
-							sql = "update book set lend_count=lend_count+1 where book_id=?";
-							ps = con.prepareStatement(sql);
-							ps.setString(1, book_id);
-							ps.executeUpdate();
-							sql = "insert into records (book_id,person_id) values (?,?)";
-							ps = con.prepareStatement(sql);
-							ps.setString(1, book_id);
-							ps.setString(2, person_id);
-							ps.executeUpdate();
-							gui.setBookLendMsg(person_id+"번 사용자님의"+book_id+"번 책 대여가 완료되었습니다.");
-							gui.setBookLendPid("");
-							gui.setBookLendBid("");
-						}
-						else {
-							gui.setBookLendMsg(book_id+"번 책은 등록되지 않았습니다. 책 번호를 확인해주세요.");				
-						}
-					}
-				}	
-			}else {
-				gui.setBookLendMsg(person_id+"번 사용자는 등록되지 않은 사용자입니다.");
+					ps.setString(2, person_id);
+					ps.executeUpdate();
+					gui.setBookLendMsg(person_id+"번 사용자님의"+book_id+"번 책 대여가 완료되었습니다.");
+					gui.setBookLendPid("");
+					gui.setBookLendBid("");
+				}
 			}
 		}
 		gui.setBookLendList(bookLendList());
-		rs.close();
+		searchBook.close();
+		searchPerson.close();
 		ps.close();
 	}
 	
@@ -370,48 +372,35 @@ public class BookAdmin implements BookAdminIF {
 	//책 반납 메서드
 	@Override
 	public void bookReturn() throws Exception{
-		String person_id = gui.getBookLendPid();
 		String book_id = gui.getBookLendBid();
-		String sql = "select * from book where book_id=?";
-		PreparedStatement ps = con.prepareStatement(sql);
+		
+		PreparedStatement ps = con.prepareStatement("SELECT records.person_id, book.book_id,\r\n"
+				+ "    CASE \r\n"
+				+ "        WHEN records.book_id IS NULL THEN 0\r\n"
+				+ "        ELSE 1\r\n"
+				+ "    END AS is_lent\r\n"
+				+ "FROM records, book\r\n"
+				+ "WHERE book.book_id = records.book_id(+)\r\n"
+				+ "AND book.book_id = ?");
 		ps.setString(1, book_id);
 		ResultSet rs = ps.executeQuery();
-		if(rs.next()) {
-			sql = "select * from person where person_id = ?";
-			ps = con.prepareStatement(sql);
-			ps.setString(1, person_id);
-			rs = ps.executeQuery();
-			if(rs.next()) {
-				if(gui.getBookLendBid().equals("") || gui.getBookLendPid().equals("")) {
-					gui.setBookLendMsg("입력되지 않은 정보가 있습니다. 입력 정보를 확인해주세요.");
-				}else {
-					sql = "select * from records where book_id=? and person_id=?";
-					ps = con.prepareStatement(sql);
-					ps.setString(1, book_id);
-					ps.setString(2, person_id);
-					ps.executeUpdate();
-					rs = ps.executeQuery();
-					if(rs.next()) {
-						sql = "delete from records where book_id=?";
-						ps = con.prepareStatement(sql);
-						ps.setString(1, book_id);
-						ps.executeUpdate();
-						gui.setBookLendMsg(person_id+"번 사용자로부터 "+book_id+"번 책이 반납되었습니다.");
-						gui.setBookLendPid("");
-						gui.setBookLendBid("");
-					}else {
-						gui.setBookLendMsg(person_id+"사용자님은 "+book_id+"번 책을 대여하지 않았습니다. 책 번호를 확인해주세요.");
-					}						
-				}
-			}else {
-				gui.setBookLendMsg(person_id+"번 사용자는 등록되지 않은 사용자입니다.");										
-			}
-		}else {
+		
+		if (!rs.next()) {
 			gui.setBookLendMsg(book_id+"번 책은 등록되지 않았습니다. 책 번호를 확인해주세요.");
 		}
-		gui.setBookLendList(bookLendList());
-		rs.close();
-		ps.close();
+		else {
+			if (rs.getInt("is_lent") == 0) {
+				gui.setBookLendMsg(book_id + "번 책을 대여하지 않았습니다. 책 번호를 확인해주세요.");
+			}
+			else {
+				ps = con.prepareStatement("delete from records where book_id=?");
+				ps.setString(1, book_id);
+				ps.executeUpdate();
+				gui.setBookLendMsg(rs.getInt("person_id") + "번 사용자로부터 "+ book_id +"번 책이 반납되었습니다.");
+				gui.setBookLendPid("");
+				gui.setBookLendBid("");
+			}
+		}
 	}
 	
 	
