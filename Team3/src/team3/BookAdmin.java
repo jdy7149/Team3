@@ -481,7 +481,7 @@ public class BookAdmin implements BookAdminIF {
 
 		while (rs.next()) {
 			
-			a-=String.valueOf(rs.getInt("records_id")).length();
+			a-=2 * (String.valueOf(rs.getInt("records_id")).length());
 			b-=3*(rs.getString("person_name").length());
 			gui.addDelayInfo(rs.getInt("records_id")+blank.repeat(a+4)+rs.getString("person_name")+blank.repeat(b+3)+rs.getString("event_time")+blank.repeat(22)+rs.getString("book_name"));
 			a=35;
