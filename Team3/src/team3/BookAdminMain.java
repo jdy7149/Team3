@@ -9,8 +9,8 @@ public class BookAdminMain {
 	public static void main(String[] args) {
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
-			String url = "jdbc:oracle:thin:@localhost:1521:xe";
-			String user = "scott";
+			String url = "jdbc:oracle:thin:@192.168.0.150:1521:xe";
+			String user = "guzi";
 			String pwd = "1234";
 			Connection con = DriverManager.getConnection(url,user,pwd);
 			

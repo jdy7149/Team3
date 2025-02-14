@@ -36,11 +36,7 @@ public class BookAdmin implements BookAdminIF {
 
 	@Override
 	public void login() throws Exception{
-		Class.forName("oracle.jdbc.driver.OracleDriver");
-	    String url = "jdbc:oracle:thin:@localhost:1521:xe";
-	    String user = "scott";
-	    String pwd = "1234";
-	    Connection con = DriverManager.getConnection(url, user, pwd);
+	
 	    String sql = "select * from admin where admin_id = ? and admin_pw = ?";
 	    PreparedStatement ps = con.prepareStatement(sql);
 	    ps.setString(1, gui.getloginId());
@@ -58,16 +54,10 @@ public class BookAdmin implements BookAdminIF {
 	    }
 	    rs.close();
 	    ps.close();
-	    con.close();
 	}
 
 	//회원가입 메서드
 	public void register() throws Exception{
-		Class.forName("oracle.jdbc.driver.OracleDriver");
-	    String url = "jdbc:oracle:thin:@localhost:1521:xe";
-	    String user = "scott";
-	    String pwd = "1234";
-	    Connection con = DriverManager.getConnection(url, user, pwd);
 	    String sql = "select * from admin where admin_id = ?";
 	    PreparedStatement ps = con.prepareStatement(sql);
 	    ps.setString(1, gui.getAdminId());
@@ -103,7 +93,6 @@ public class BookAdmin implements BookAdminIF {
 	    }
 	    rs.close();
 	    ps.close();
-	    con.close();
 	}
 	
 	
