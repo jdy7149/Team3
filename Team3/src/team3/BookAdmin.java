@@ -398,6 +398,9 @@ public class BookAdmin implements BookAdminIF {
 				gui.setBookLendBid("");
 			}
 		}
+		rs.close();
+		ps.close();
+		gui.setBookLendList(bookLendList());
 	}
 	
 	
