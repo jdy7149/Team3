@@ -121,28 +121,36 @@ public class BookAdmin implements BookAdminIF {
 	// 회원 등록1
 	@Override
 	public void userAdd() throws Exception {
-
 		if (gui.getUserAddName().equals("") || gui.getUserAddTel().equals("") || gui.getUserAddAddr().equals("")
 				|| gui.getUserAddBirth().equals("")) {
 			gui.setUserAddMsg("필수 입력 정보를 확인해주세요.");
 
 		} else {
-			String sql = "insert into person (person_name,tel,addr,birth) values(?,?,?,?)";
+			String sql = "select * from person where tel = ?";
 			PreparedStatement ps = con.prepareStatement(sql);
-			ps.setString(1, gui.getUserAddName());
-			ps.setString(2, gui.getUserAddTel());
-			ps.setString(3, gui.getUserAddAddr());
-			ps.setString(4, gui.getUserAddBirth());
-			ps.executeUpdate();
-			
-			gui.setUserAddMsg(gui.getUserAddName() + "님의 등록이 완료되었습니다.");
-			gui.setUserAddName("");
-			gui.setUserAddTel("");
-			gui.setUserAddAddr("");
-			gui.setUserAddBirth("");
-
-			gui.setUserList(userList());
-			ps.close();
+			ps.setString(1, gui.getUserAddTel());
+			ResultSet rs = ps.executeQuery();
+			if(rs.next()) {
+				gui.setUserAddMsg("이미 등록된 사용자입니다.");
+			}else {
+				sql = "insert into person (person_name,tel,addr,birth) values(?,?,?,?)";
+				ps = con.prepareStatement(sql);
+				ps.setString(1, gui.getUserAddName());
+				ps.setString(2, gui.getUserAddTel());
+				ps.setString(3, gui.getUserAddAddr());
+				ps.setString(4, gui.getUserAddBirth());
+				ps.executeUpdate();
+				
+				gui.setUserAddMsg(gui.getUserAddName() + "님의 등록이 완료되었습니다.");
+				gui.setUserAddName("");
+				gui.setUserAddTel("");
+				gui.setUserAddAddr("");
+				gui.setUserAddBirth("");
+				
+				gui.setUserList(userList());
+			}
+			rs.close();
+			ps.close();			
 		}
 	}
 	
